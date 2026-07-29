@@ -170,19 +170,19 @@ section { padding: 90px 0; }
 .bonus-box {
   border: 1px solid rgba(212,184,150,.35);
   border-radius: 22px;
-  padding: 44px 48px;
+  padding: 44px 48px 56px;
   background: linear-gradient(150deg, rgba(90,56,34,.16), rgba(42,22,8,.24));
-  position: relative; overflow: hidden;
+  position: relative;
 }
-.bonus-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #d4b896, transparent); }
+.bonus-box::before { content: ''; position: absolute; top: 0; left: 22px; right: 22px; height: 2px; background: linear-gradient(90deg, transparent, #d4b896, transparent); }
 .bonus-tag { display: inline-flex; align-items: center; gap: 8px; background: var(--wood); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; padding: 6px 16px; border-radius: 100px; margin-bottom: 18px; }
 .bonus-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--white); margin-bottom: 12px; text-align: center; }
 .bonus-title em { font-style: italic; color: #d4b896; }
 .bonus-desc { font-size: 14px; color: #c9b8a4; line-height: 1.75; max-width: 560px; margin: 0 auto 40px; text-align: center; }
 
-.bonus-devices { display: flex; align-items: center; justify-content: center; gap: 0; position: relative; }
+.bonus-devices { display: flex; align-items: flex-end; justify-content: center; gap: 0; position: relative; }
 .bonus-browser { width: 460px; flex-shrink: 0; }
-.bonus-phone-wrap { margin-left: -46px; margin-bottom: -30px; position: relative; z-index: 2; }
+.bonus-phone-wrap { margin-left: -46px; position: relative; z-index: 2; }
 
 .phone-frame { width: 150px; background: #0a0501; border: 2px solid rgba(90,56,34,.5); border-radius: 22px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.55); }
 .phone-notch { height: 16px; display: flex; align-items: center; justify-content: center; background: #0a0501; }
