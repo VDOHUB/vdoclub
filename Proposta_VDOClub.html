@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposta · VDO CLUB</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --wood:      #5a3822;
+  --wood-dark: #2a1608;
+  --ink:       #1a0e05;
+  --ink2:      #3a2412;
+  --muted:     #8a7360;
+  --cream:     #f5f0e8;
+  --white:     #fffaf3;
+  --line:      #e6ddd2;
+  --bg-soft:   #f2e9dc;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--ink);
+  color: var(--cream);
+  overflow-x: hidden;
+}
+
+.container { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+section { padding: 90px 0; }
+
+/* ── INTRO ── */
+.intro {
+  min-height: 92vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 32px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(90,56,34,.35), transparent 55%),
+    radial-gradient(circle at 80% 85%, rgba(42,22,8,.5), transparent 55%),
+    var(--ink);
+}
+
+.intro-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(90,56,34,.25);
+  border: 1px solid rgba(90,56,34,.5);
+  border-radius: 100px; padding: 7px 20px;
+  font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: #d4b896;
+  margin-bottom: 28px;
+}
+.intro-tag::before { content:''; width:6px; height:6px; background:#d4b896; border-radius:50%; animation: blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+.intro-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(34px, 5.5vw, 66px);
+  font-weight: 700; line-height: 1.15;
+  color: var(--white); margin-bottom: 22px;
+}
+.intro-title em {
+  font-style: italic;
+  background: linear-gradient(90deg, #d4b896, #a8825c);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.intro-sub { font-size: 16px; color: #c9b8a4; max-width: 560px; line-height: 1.75; }
+
+/* ── SECTION LABEL ── */
+.sec-label { font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #d4b896; margin-bottom: 14px; display: block; text-align: center; }
+.sec-title { font-family: 'Playfair Display', serif; font-size: clamp(28px, 3.6vw, 42px); font-weight: 700; color: var(--white); line-height: 1.25; margin-bottom: 16px; text-align: center; }
+.sec-title em { font-style: italic; color: #d4b896; }
+.sec-sub { font-size: 14.5px; color: #b8a690; line-height: 1.7; max-width: 600px; margin: 0 auto; text-align: center; }
+
+/* ── CONTEXT CARDS ── */
+.context-section { background: rgba(0,0,0,.2); }
+.context-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+.context-card { background: rgba(255,255,255,.02); border: 1px solid rgba(90,56,34,.3); border-radius: 16px; padding: 26px; }
+.context-card .num { font-family: 'Playfair Display', serif; font-size: 13px; color: #d4b896; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
+.context-card p { font-size: 13.5px; color: #d8cabb; line-height: 1.65; }
+
+/* ── SCREEN DEMOS ── */
+.screen-list { display: flex; flex-direction: column; gap: 76px; margin-top: 52px; }
+.screen-item { display: grid; grid-template-columns: 1fr 1.5fr; gap: 52px; align-items: center; }
+.screen-item.flip { grid-template-columns: 1.5fr 1fr; }
+.screen-item.flip .screen-info { order: 2; }
+.screen-item.flip .screen-mock { order: 1; }
+
+.screen-num { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; color: #d4b896; text-transform: uppercase; margin-bottom: 8px; }
+.screen-name { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--white); margin-bottom: 10px; line-height: 1.25; }
+.screen-desc { font-size: 13.5px; color: #b8a690; line-height: 1.75; margin-bottom: 18px; }
+.screen-bullets { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.screen-bullets li { font-size: 12.5px; color: #e2d5c4; display: flex; align-items: flex-start; gap: 9px; line-height: 1.4; }
+.screen-bullets li::before { content: '✦'; color: #d4b896; font-size: 9px; margin-top: 3px; flex-shrink: 0; }
+
+/* App browser frame */
+.app-frame { background: #150b03; border: 1px solid rgba(90,56,34,.4); border-radius: 12px; overflow: hidden; box-shadow: 0 28px 70px rgba(0,0,0,.6); }
+.app-chrome { background: #0d0702; padding: 8px 12px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(90,56,34,.25); }
+.app-chrome .c-dots { display: flex; gap: 4px; }
+.app-chrome .c-dots span { width: 8px; height: 8px; border-radius: 50%; }
+.app-chrome .c-url { flex: 1; background: rgba(90,56,34,.15); border: 1px solid rgba(90,56,34,.25); border-radius: 4px; padding: 3px 9px; font-size: 10px; color: #b8a690; }
+
+.app-body { display: flex; min-height: 300px; }
+.app-sidebar { width: 48px; background: #0a0501; border-right: 1px solid rgba(90,56,34,.25); display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 3px; flex-shrink: 0; }
+.app-logo { width: 26px; height: 26px; border-radius: 6px; background: var(--wood); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-family: 'Playfair Display', serif; font-size: 10px; font-weight: 700; color: #fff; }
+.nav-ic { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.nav-ic svg { width: 13px; height: 13px; stroke: rgba(245,240,232,.25); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-ic.on { background: rgba(90,56,34,.35); }
+.nav-ic.on svg { stroke: #d4b896; }
+
+.app-main { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+.app-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+.app-topbar .pg-title { font-size: 12.5px; font-weight: 700; color: var(--white); }
+.app-topbar .pg-sub { font-size: 9px; color: #a08e78; }
+.app-topbar .pg-btn { background: var(--wood); color: #fff; font-size: 9px; font-weight: 600; padding: 4px 10px; border-radius: 4px; }
+
+.kpi-row { display: flex; gap: 7px; }
+.kpi-card { flex: 1; background: rgba(90,56,34,.14); border: 1px solid rgba(90,56,34,.3); border-radius: 6px; padding: 8px; }
+.kpi-label { font-size: 8px; color: #a08e78; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.kpi-val { font-size: 13px; font-weight: 700; color: var(--white); line-height: 1; }
+.kpi-val.wd { color: #d4b896; }
+.kpi-sub { font-size: 8px; color: rgba(212,184,150,.7); margin-top: 2px; }
+
+.data-table { background: rgba(255,255,255,.015); border: 1px solid rgba(90,56,34,.22); border-radius: 6px; overflow: hidden; }
+.dt-head { display: flex; background: rgba(90,56,34,.12); padding: 6px 9px; border-bottom: 1px solid rgba(90,56,34,.22); }
+.dt-head span { font-size: 8px; font-weight: 700; color: #a08e78; text-transform: uppercase; letter-spacing: .8px; }
+.dt-row { display: flex; padding: 6px 9px; border-bottom: 1px solid rgba(90,56,34,.1); align-items: center; }
+.dt-row:last-child { border-bottom: none; }
+.dt-row span { font-size: 9.5px; color: #e2d5c4; }
+.dt-row .muted { color: #a08e78; }
+.dt-c1 { flex: 1.6; } .dt-c2 { flex: 1.2; } .dt-c3 { flex: 1.2; } .dt-c4 { flex: .9; } .dt-c5 { flex: .8; text-align: right; }
+
+.badge { display: inline-block; font-size: 8px; font-weight: 600; padding: 1px 6px; border-radius: 3px; }
+.badge-g { background: rgba(74,222,128,.14); border: 1px solid rgba(74,222,128,.28); color: #4ade80; }
+.badge-y { background: rgba(250,204,21,.12); border: 1px solid rgba(250,204,21,.24); color: #facc15; }
+.badge-r { background: rgba(212,184,150,.18); border: 1px solid rgba(212,184,150,.35); color: #d4b896; }
+
+.stars { color: #d4b896; font-size: 10px; letter-spacing: 1px; }
+
+.mini-cat { display: flex; flex-wrap: wrap; gap: 5px; }
+.cat-chip { font-size: 9px; background: rgba(90,56,34,.16); border: 1px solid rgba(90,56,34,.32); border-radius: 5px; padding: 4px 9px; color: #e2d5c4; }
+.cat-chip.active { background: rgba(212,184,150,.22); border-color: rgba(212,184,150,.45); color: #d4b896; font-weight: 700; }
+
+.supplier-card { background: rgba(90,56,34,.08); border: 1px solid rgba(90,56,34,.22); border-radius: 7px; padding: 9px; display: flex; gap: 9px; align-items: center; margin-bottom: 6px; }
+.supplier-avatar { width: 30px; height: 30px; border-radius: 7px; background: var(--wood); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.supplier-name { font-size: 10.5px; font-weight: 600; color: var(--white); }
+.supplier-meta { font-size: 8.5px; color: #a08e78; }
+
+/* Public showcase card style */
+.showcase-hero { background: linear-gradient(135deg, rgba(90,56,34,.25), rgba(42,22,8,.4)); border-radius: 8px; padding: 16px; text-align: center; margin-bottom: 10px; }
+.showcase-hero .sh-title { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--white); margin-bottom: 4px; }
+.showcase-hero .sh-sub { font-size: 9.5px; color: #c9b8a4; }
+.showcase-blur { position: relative; }
+.showcase-blur::after { content: 'Conteúdo exclusivo para membros'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(10,5,1,.55); backdrop-filter: blur(2px); font-size: 9px; color: #d4b896; font-weight: 600; text-align: center; border-radius: 6px; }
+
+/* ── DIFERENCIAIS ── */
+.diff-section { padding: 56px 48px; background: rgba(255,255,255,.02); border: 1px solid rgba(90,56,34,.25); border-radius: 20px; position: relative; overflow: hidden; margin-top: 20px; }
+.diff-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--wood), transparent); }
+.diff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.diff-card { padding: 22px; border-radius: 14px; background: rgba(90,56,34,.08); border: 1px solid rgba(90,56,34,.22); }
+.diff-icon-wrap { width: 36px; height: 36px; background: rgba(90,56,34,.2); border: 1px solid rgba(90,56,34,.35); border-radius: 9px; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; }
+.diff-icon-wrap svg { width: 16px; height: 16px; stroke: #d4b896; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.diff-title { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 7px; }
+.diff-desc { font-size: 12.5px; color: #b8a690; line-height: 1.6; }
+
+/* ── BÔNUS ── */
+.bonus-section { padding: 20px 0 10px; }
+.bonus-box {
+  border: 1px solid rgba(212,184,150,.35);
+  border-radius: 22px;
+  padding: 44px 48px;
+  background: linear-gradient(150deg, rgba(90,56,34,.16), rgba(42,22,8,.24));
+  position: relative; overflow: hidden;
+}
+.bonus-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #d4b896, transparent); }
+.bonus-tag { display: inline-flex; align-items: center; gap: 8px; background: var(--wood); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; padding: 6px 16px; border-radius: 100px; margin-bottom: 18px; }
+.bonus-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--white); margin-bottom: 12px; text-align: center; }
+.bonus-title em { font-style: italic; color: #d4b896; }
+.bonus-desc { font-size: 14px; color: #c9b8a4; line-height: 1.75; max-width: 560px; margin: 0 auto 40px; text-align: center; }
+
+.bonus-devices { display: flex; align-items: center; justify-content: center; gap: 0; position: relative; }
+.bonus-browser { width: 460px; flex-shrink: 0; }
+.bonus-phone-wrap { margin-left: -46px; margin-bottom: -30px; position: relative; z-index: 2; }
+
+.phone-frame { width: 150px; background: #0a0501; border: 2px solid rgba(90,56,34,.5); border-radius: 22px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.55); }
+.phone-notch { height: 16px; display: flex; align-items: center; justify-content: center; background: #0a0501; }
+.phone-notch::after { content: ''; width: 44px; height: 5px; border-radius: 4px; background: rgba(212,184,150,.3); }
+.phone-screen { background: #150b03; padding: 8px; min-height: 280px; }
+
+.bonus-caption { text-align: center; margin-top: 28px; display: flex; justify-content: center; gap: 28px; }
+.bonus-caption span { font-size: 11px; color: #a08e78; display: flex; align-items: center; gap: 6px; }
+.bonus-caption span::before { content: '✦'; color: #d4b896; font-size: 8px; }
+
+/* ── INVESTMENT ── */
+.invest-section { background: rgba(0,0,0,.22); }
+.price-box {
+  max-width: 640px; margin: 48px auto 0;
+  background: linear-gradient(145deg, rgba(90,56,34,.22), rgba(42,22,8,.3));
+  border: 1px solid rgba(212,184,150,.4);
+  border-radius: 24px; padding: 44px 48px;
+  text-align: center; position: relative; overflow: hidden;
+  box-shadow: 0 0 70px rgba(90,56,34,.2);
+}
+.price-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #d4b896, transparent); }
+.price-ribbon { display: inline-block; background: var(--wood); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; padding: 6px 18px; border-radius: 100px; margin-bottom: 20px; }
+.price-val { font-size: 48px; font-weight: 700; color: var(--white); line-height: 1; }
+.price-val sup { font-size: 20px; color: #d4b896; vertical-align: super; }
+.price-note { font-size: 12px; color: #c9b8a4; margin: 14px 0 4px; }
+.price-desc { font-size: 13.5px; color: #b8a690; line-height: 1.7; max-width: 480px; margin: 14px auto 0; }
+
+.scope-table { width: 100%; max-width: 640px; margin: 32px auto 0; border-collapse: collapse; }
+.scope-table td { padding: 10px 4px; font-size: 12.5px; color: #d8cabb; border-bottom: 1px solid rgba(90,56,34,.2); }
+.scope-table td:first-child::before { content: '✦'; color: #d4b896; font-size: 9px; margin-right: 9px; }
+.scope-table tr:last-child td { border-bottom: none; }
+
+/* Terms */
+.terms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 900px; margin: 36px auto 0; }
+.term-item { background: rgba(255,255,255,.02); border: 1px solid rgba(90,56,34,.25); border-radius: 12px; padding: 16px 18px; }
+.term-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; color: #d4b896; margin-bottom: 6px; }
+.term-val { font-size: 12.5px; color: #c9b8a4; line-height: 1.55; }
+
+/* Future phase */
+.future-box {
+  max-width: 720px; margin: 40px auto 0;
+  background: rgba(90,56,34,.08); border: 1px dashed rgba(212,184,150,.4);
+  border-radius: 16px; padding: 24px 30px;
+}
+.future-tag { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.8px; color: #d4b896; margin-bottom: 8px; }
+.future-title { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--white); margin-bottom: 8px; }
+.future-desc { font-size: 12.5px; color: #b8a690; line-height: 1.7; }
+
+/* Closing */
+.closing-card {
+  max-width: 520px; margin: 60px auto 0;
+  background: rgba(90,56,34,.1); border: 1px solid rgba(212,184,150,.3);
+  border-radius: 20px; padding: 40px 48px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.closing-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, #d4b896, transparent); }
+.closing-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--white); margin-bottom: 10px; line-height: 1.3; }
+.closing-desc { font-size: 13px; color: #b8a690; line-height: 1.6; margin-bottom: 26px; }
+.closing-contact { display: inline-flex; align-items: center; gap: 8px; background: rgba(90,56,34,.16); border: 1px solid rgba(212,184,150,.3); border-radius: 8px; padding: 8px 20px; }
+
+/* ── REVEAL ── */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  .screen-item, .screen-item.flip { grid-template-columns: 1fr; }
+  .screen-item .screen-info, .screen-item.flip .screen-info { order: 1 !important; }
+  .screen-item .screen-mock, .screen-item.flip .screen-mock { order: 2 !important; }
+  .context-grid { grid-template-columns: 1fr; }
+  .diff-grid { grid-template-columns: 1fr 1fr; }
+  .terms-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .diff-grid { grid-template-columns: 1fr; }
+  .container { padding: 0 20px; }
+  .price-box { padding: 32px 26px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ══ INTRO ══ -->
+  <div class="intro">
+    <h1 class="intro-title reveal">
+      A ponte entre<br><em>arquitetos e fornecedores</em>
+    </h1>
+    <p class="intro-sub reveal">
+      O VDO CLUB junta, no mesmo lugar, cadastro, reputação, categorias e todo o fluxo comercial entre quem projeta e quem fornece. Do pedido de orçamento até o negócio fechado.
+    </p>
+  </div>
+
+  <!-- ══ CONTEXTO ══ -->
+  <section class="context-section">
+    <div class="container">
+      <span class="sec-label reveal">O que conversamos</span>
+      <h2 class="sec-title reveal">Um clube fechado,<br>uma <em>operação organizada</em></h2>
+      <p class="sec-sub reveal">O mesmo arquiteto que compra também é membro do Club. A plataforma serve pra organizar essa relação do começo ao fim.</p>
+
+      <div class="context-grid">
+        <div class="context-card reveal">
+          <div class="num">01</div>
+          <p>Cadastro de <strong style="color:var(--white)">arquitetos e fornecedores</strong>, com login próprio, categorias por especialidade e histórico de avaliação.</p>
+        </div>
+        <div class="context-card reveal">
+          <div class="num">02</div>
+          <p>Um <strong style="color:var(--white)">CRM de orçamentos</strong>. O arquiteto pede, o fornecedor responde com valor, o negócio fecha e o pagamento acontece dentro do app.</p>
+        </div>
+        <div class="context-card reveal">
+          <div class="num">03</div>
+          <p>Uma <strong style="color:var(--white)">vitrine pública</strong> que mostra um gostinho do que tem dentro do Club pra quem ainda não é membro.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TELAS ══ -->
+  <section>
+    <div class="container">
+      <span class="sec-label reveal">Prévia real</span>
+      <h2 class="sec-title reveal">O que você vai ver<br>na <em>plataforma</em></h2>
+      <p class="sec-sub reveal">Cada tela abaixo já reflete o fluxo real de uso do Club.</p>
+
+      <div class="screen-list">
+
+        <!-- TELA 01: Login/Cadastro -->
+        <div class="screen-item reveal">
+          <div class="screen-info">
+            <div class="screen-num">Tela 01 · Acesso</div>
+            <div class="screen-name">Login e Cadastro</div>
+            <div class="screen-desc">Porta de entrada do Club. A pessoa escolhe se é arquiteto ou fornecedor e segue para o cadastro e painel correspondente.</div>
+            <ul class="screen-bullets">
+              <li>Login e senha com autenticação segura</li>
+              <li>Seleção de perfil: Arquiteto ou Fornecedor</li>
+              <li>Cadastro com dados de contato, especialidade e apresentação</li>
+            </ul>
+          </div>
+          <div class="screen-mock">
+            <div class="app-frame">
+              <div class="app-chrome">
+                <div class="c-dots"><span style="background:#5a3822"></span><span style="background:#8a7360"></span><span style="background:#2a1608"></span></div>
+                <div class="c-url">vdoclub.app/entrar</div>
+              </div>
+              <div class="app-body" style="align-items:center;justify-content:center;padding:30px;">
+                <div style="width:100%;max-width:280px;margin:0 auto;">
+                  <div style="text-align:center;margin-bottom:18px;">
+                    <div style="width:48px;height:48px;border-radius:12px;background:var(--wood);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;">VC</div>
+                    <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--white);">VDO CLUB</div>
+                    <div style="font-size:9px;color:#a08e78;">Arquitetos & Fornecedores</div>
+                  </div>
+                  <div style="display:flex;gap:6px;margin-bottom:12px;">
+                    <div style="flex:1;text-align:center;padding:7px;border-radius:6px;background:rgba(212,184,150,.22);border:1px solid rgba(212,184,150,.4);font-size:9.5px;color:#d4b896;font-weight:700;">Arquiteto</div>
+                    <div style="flex:1;text-align:center;padding:7px;border-radius:6px;background:rgba(90,56,34,.12);border:1px solid rgba(90,56,34,.25);font-size:9.5px;color:#a08e78;">Fornecedor</div>
+                  </div>
+                  <div style="background:rgba(90,56,34,.1);border:1px solid rgba(90,56,34,.25);border-radius:6px;padding:8px 10px;margin-bottom:7px;font-size:9px;color:#a08e78;">E-mail</div>
+                  <div style="background:rgba(90,56,34,.1);border:1px solid rgba(90,56,34,.25);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:9px;color:#a08e78;">Senha</div>
+                  <div style="background:var(--wood);border-radius:7px;padding:9px;text-align:center;font-size:11px;font-weight:700;color:#fff;">Entrar no Club</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TELA 02: Diretório de fornecedores -->
+        <div class="screen-item flip reveal">
+          <div class="screen-info">
+            <div class="screen-num">Tela 02 · Rede</div>
+            <div class="screen-name">Diretório de Fornecedores</div>
+            <div class="screen-desc">Todos os fornecedores do Club organizados por categoria, com nota de avaliação e histórico de negócios à vista, para o arquiteto escolher com mais segurança.</div>
+            <ul class="screen-bullets">
+              <li>Categorias: Marcenaria, Iluminação, Esquadrias, Revestimentos e mais</li>
+              <li>Avaliação por estrelas construída a partir do histórico</li>
+              <li>Busca e filtro por especialidade</li>
+            </ul>
+          </div>
+          <div class="screen-mock">
+            <div class="app-frame">
+              <div class="app-chrome">
+                <div class="c-dots"><span style="background:#5a3822"></span><span style="background:#8a7360"></span><span style="background:#2a1608"></span></div>
+                <div class="c-url">vdoclub.app/fornecedores</div>
+              </div>
+              <div class="app-body">
+                <div class="app-sidebar">
+                  <div class="app-logo">VC</div>
+                  <div class="nav-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+                  <div class="nav-ic on"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+                  <div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div>
+                  <div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                </div>
+                <div class="app-main">
+                  <div class="app-topbar">
+                    <div><div class="pg-title">Fornecedores</div><div class="pg-sub">48 ativos no Club</div></div>
+                    <div class="pg-btn">Filtrar</div>
+                  </div>
+                  <div class="mini-cat">
+                    <div class="cat-chip active">Marcenaria</div>
+                    <div class="cat-chip">Iluminação</div>
+                    <div class="cat-chip">Esquadrias</div>
+                    <div class="cat-chip">Revestimentos</div>
+                    <div class="cat-chip">Paisagismo</div>
+                  </div>
+                  <div class="supplier-card">
+                    <div class="supplier-avatar">MN</div>
+                    <div style="flex:1;">
+                      <div class="supplier-name">Marcenaria Nobre</div>
+                      <div class="supplier-meta">Marcenaria · 24 negócios fechados</div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                  </div>
+                  <div class="supplier-card">
+                    <div class="supplier-avatar" style="background:#8a7360;">LP</div>
+                    <div style="flex:1;">
+                      <div class="supplier-name">Luminaria Prime</div>
+                      <div class="supplier-meta">Iluminação · 17 negócios fechados</div>
+                    </div>
+                    <div class="stars">★★★★☆</div>
+                  </div>
+                  <div class="supplier-card">
+                    <div class="supplier-avatar" style="background:#2a1608;">VC</div>
+                    <div style="flex:1;">
+                      <div class="supplier-name">Vidros & Cia</div>
+                      <div class="supplier-meta">Esquadrias · 9 negócios fechados</div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TELA 03: CRM de orçamentos -->
+        <div class="screen-item reveal">
+          <div class="screen-info">
+            <div class="screen-num">Tela 03 · Comercial</div>
+            <div class="screen-name">CRM de Orçamentos</div>
+            <div class="screen-desc">O núcleo do Club: o arquiteto acompanha todas as solicitações de orçamento em andamento, com status de cada fornecedor consultado.</div>
+            <ul class="screen-bullets">
+              <li>Lista de solicitações com status (Aguardando, Respondido, Fechado)</li>
+              <li>Valor proposto por cada fornecedor consultado</li>
+              <li>Histórico de negócios do arquiteto dentro do Club</li>
+            </ul>
+          </div>
+          <div class="screen-mock">
+            <div class="app-frame">
+              <div class="app-chrome">
+                <div class="c-dots"><span style="background:#5a3822"></span><span style="background:#8a7360"></span><span style="background:#2a1608"></span></div>
+                <div class="c-url">vdoclub.app/orcamentos</div>
+              </div>
+              <div class="app-body">
+                <div class="app-sidebar">
+                  <div class="app-logo">VC</div>
+                  <div class="nav-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+                  <div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+                  <div class="nav-ic on"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                  <div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                </div>
+                <div class="app-main">
+                  <div class="app-topbar">
+                    <div><div class="pg-title">Meus Orçamentos</div><div class="pg-sub">Fernanda Torres · Arquiteta</div></div>
+                    <div class="pg-btn">+ Solicitar</div>
+                  </div>
+                  <div class="data-table">
+                    <div class="dt-head">
+                      <span class="dt-c1">Fornecedor</span>
+                      <span class="dt-c2">Categoria</span>
+                      <span class="dt-c3">Status</span>
+                      <span class="dt-c5">Valor</span>
+                    </div>
+                    <div class="dt-row">
+                      <span class="dt-c1">Marcenaria Nobre</span>
+                      <span class="dt-c2 muted">Marcenaria</span>
+                      <span class="dt-c3"><span class="badge badge-g">Fechado</span></span>
+                      <span class="dt-c5" style="color:#d4b896;font-weight:600;">R$ 18.400</span>
+                    </div>
+                    <div class="dt-row">
+                      <span class="dt-c1">Luminaria Prime</span>
+                      <span class="dt-c2 muted">Iluminação</span>
+                      <span class="dt-c3"><span class="badge badge-y">Respondido</span></span>
+                      <span class="dt-c5" style="color:#d4b896;font-weight:600;">R$ 6.900</span>
+                    </div>
+                    <div class="dt-row">
+                      <span class="dt-c1">Vidros & Cia</span>
+                      <span class="dt-c2 muted">Esquadrias</span>
+                      <span class="dt-c3"><span class="badge badge-r">Aguardando</span></span>
+                      <span class="dt-c5 muted">·</span>
+                    </div>
+                    <div class="dt-row">
+                      <span class="dt-c1">Verde Paisagismo</span>
+                      <span class="dt-c2 muted">Paisagismo</span>
+                      <span class="dt-c3"><span class="badge badge-g">Fechado</span></span>
+                      <span class="dt-c5" style="color:#d4b896;font-weight:600;">R$ 11.200</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TELA 04: Detalhe do orçamento + pagamento -->
+        <div class="screen-item flip reveal">
+          <div class="screen-info">
+            <div class="screen-num">Tela 04 · Fechamento</div>
+            <div class="screen-name">Detalhe do Orçamento e Pagamento</div>
+            <div class="screen-desc">Ao abrir uma solicitação, o arquiteto vê o valor proposto pelo fornecedor, aprova o fechamento e realiza o pagamento sem sair do aplicativo.</div>
+            <ul class="screen-bullets">
+              <li>Valor detalhado por item ou serviço</li>
+              <li>Aprovação do fechamento com um clique</li>
+              <li>Pagamento processado dentro do app</li>
+            </ul>
+          </div>
+          <div class="screen-mock">
+            <div class="app-frame">
+              <div class="app-chrome">
+                <div class="c-dots"><span style="background:#5a3822"></span><span style="background:#8a7360"></span><span style="background:#2a1608"></span></div>
+                <div class="c-url">vdoclub.app/orcamentos/2481</div>
+              </div>
+              <div class="app-body" style="padding:16px;">
+                <div style="width:100%;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <div>
+                      <div style="font-size:12px;font-weight:700;color:var(--white);">Marcenaria Nobre</div>
+                      <div style="font-size:9px;color:#a08e78;">Orçamento #2481 · Marcenaria</div>
+                    </div>
+                    <span class="badge badge-y">Aguardando aprovação</span>
+                  </div>
+                  <div class="data-table" style="margin-bottom:12px;">
+                    <div class="dt-head"><span class="dt-c1">Item</span><span class="dt-c5">Valor</span></div>
+                    <div class="dt-row"><span class="dt-c1">Marcenaria planejada · sala</span><span class="dt-c5 muted">R$ 12.400</span></div>
+                    <div class="dt-row"><span class="dt-c1">Marcenaria planejada · cozinha</span><span class="dt-c5 muted">R$ 6.000</span></div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(212,184,150,.14);border:1px solid rgba(212,184,150,.3);border-radius:6px;padding:10px 14px;margin-bottom:12px;">
+                    <span style="font-size:10px;color:#e2d5c4;font-weight:600;">Total do orçamento</span>
+                    <span style="font-size:15px;color:#d4b896;font-weight:700;">R$ 18.400</span>
+                  </div>
+                  <div style="background:var(--wood);border-radius:7px;padding:10px;text-align:center;font-size:11px;font-weight:700;color:#fff;">Aprovar e pagar pelo app</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TELA 05: Vitrine pública -->
+        <div class="screen-item reveal">
+          <div class="screen-info">
+            <div class="screen-num">Tela 05 · Aquisição</div>
+            <div class="screen-name">Vitrine Pública (Spoiler do Club)</div>
+            <div class="screen-desc">Quem ainda não é membro vê uma prévia do Club: categorias e fornecedores em destaque, sem acesso aos dados completos. É o gancho para pedir entrada.</div>
+            <ul class="screen-bullets">
+              <li>Página pública, sem necessidade de login</li>
+              <li>Prévia borrada de fornecedores reais do Club</li>
+              <li>Chamada para solicitação de associação</li>
+            </ul>
+          </div>
+          <div class="screen-mock">
+            <div class="app-frame">
+              <div class="app-chrome">
+                <div class="c-dots"><span style="background:#5a3822"></span><span style="background:#8a7360"></span><span style="background:#2a1608"></span></div>
+                <div class="c-url">vdoclub.app</div>
+              </div>
+              <div class="app-body" style="padding:16px;flex-direction:column;">
+                <div class="showcase-hero">
+                  <div class="sh-title">O maior clube de arquitetos e fornecedores do Brasil</div>
+                  <div class="sh-sub">Conecte-se a uma rede validada de negócios</div>
+                </div>
+                <div class="mini-cat" style="margin-bottom:10px;">
+                  <div class="cat-chip">Marcenaria</div>
+                  <div class="cat-chip">Iluminação</div>
+                  <div class="cat-chip">Esquadrias</div>
+                  <div class="cat-chip">+ 12 categorias</div>
+                </div>
+                <div class="showcase-blur">
+                  <div class="supplier-card">
+                    <div class="supplier-avatar">MN</div>
+                    <div style="flex:1;"><div class="supplier-name">Marcenaria Nobre</div><div class="supplier-meta">Marcenaria · Club desde 2024</div></div>
+                    <div class="stars">★★★★★</div>
+                  </div>
+                  <div class="supplier-card">
+                    <div class="supplier-avatar" style="background:#8a7360;">LP</div>
+                    <div style="flex:1;"><div class="supplier-name">Luminaria Prime</div><div class="supplier-meta">Iluminação · Club desde 2024</div></div>
+                    <div class="stars">★★★★☆</div>
+                  </div>
+                </div>
+                <div style="margin-top:10px;background:var(--wood);border-radius:7px;padding:9px;text-align:center;font-size:10.5px;font-weight:700;color:#fff;">Solicitar associação ao Club</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- DIFERENCIAIS -->
+      <div class="diff-section reveal" style="margin-top:76px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <span class="sec-label" style="margin-bottom:8px;">Diferenciais</span>
+          <div class="sec-title" style="font-size:24px;">Do <em>VDO CLUB</em></div>
+        </div>
+        <div class="diff-grid">
+          <div class="diff-card">
+            <div class="diff-icon-wrap"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div class="diff-title">Só quem foi aprovado entra</div>
+            <div class="diff-desc">Fornecedor e arquiteto passam por uma triagem antes de fazer parte do Club. Isso mantém a rede pequena e confiável, em vez de virar mais um cadastro aberto na internet.</div>
+          </div>
+          <div class="diff-card">
+            <div class="diff-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+            <div class="diff-title">A reputação fala por si</div>
+            <div class="diff-desc">Toda avaliação vem de um negócio que realmente aconteceu dentro da plataforma. Não tem como comprar nota ou inflar histórico.</div>
+          </div>
+          <div class="diff-card">
+            <div class="diff-icon-wrap"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            <div class="diff-title">O orçamento não se perde mais</div>
+            <div class="diff-desc">Hoje isso vive espalhado entre WhatsApp, e-mail e planilha. No Club, pedido, resposta e fechamento ficam no mesmo lugar, com histórico de tudo.</div>
+          </div>
+          <div class="diff-card">
+            <div class="diff-icon-wrap"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="diff-title">Fechou, pagou</div>
+            <div class="diff-desc">Aprovou o orçamento, o pagamento já acontece ali dentro do app. Não precisa sair pra gerar boleto ou fazer transferência à parte.</div>
+          </div>
+          <div class="diff-card">
+            <div class="diff-icon-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div class="diff-title">Achar o fornecedor certo é rápido</div>
+            <div class="diff-desc">As categorias organizam quem faz o quê. Em vez de pedir indicação pra colega de profissão, o arquiteto busca direto por especialidade.</div>
+          </div>
+          <div class="diff-card">
+            <div class="diff-icon-wrap"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+            <div class="diff-title">A vitrine faz o convite sozinha</div>
+            <div class="diff-desc">Quem ainda não é membro vê só um pedaço do que existe lá dentro. O suficiente pra dar vontade de pedir acesso.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ BÔNUS ══ -->
+  <section class="bonus-section">
+    <div class="container">
+      <div class="bonus-box reveal">
+        <div style="text-align:center;">
+          <div class="bonus-tag">Bônus incluso</div>
+        </div>
+        <div class="bonus-title">Um <em>Web App</em> completo,<br>no PC e no celular</div>
+        <p class="bonus-desc">A plataforma é entregue como Web App com responsividade total. O arquiteto e o fornecedor acessam pelo navegador do computador ou direto do celular, com a mesma interface adaptada pra cada tela. Basta acessar e entrar, sem instalar nada.</p>
+
+        <div class="bonus-devices">
+          <div class="bonus-browser">
+            <div class="app-frame">
+              <div class="app-chrome">
+                <div class="c-dots"><span style="background:#5a3822"></span><span style="background:#8a7360"></span><span style="background:#2a1608"></span></div>
+                <div class="c-url">vdoclub.app/orcamentos</div>
+              </div>
+              <div class="app-body">
+                <div class="app-sidebar">
+                  <div class="app-logo">VC</div>
+                  <div class="nav-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+                  <div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+                  <div class="nav-ic on"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                  <div class="nav-ic"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                </div>
+                <div class="app-main">
+                  <div class="app-topbar">
+                    <div><div class="pg-title">Meus Orçamentos</div><div class="pg-sub">Fernanda Torres · Arquiteta</div></div>
+                    <div class="pg-btn">+ Solicitar</div>
+                  </div>
+                  <div class="data-table">
+                    <div class="dt-head">
+                      <span class="dt-c1">Fornecedor</span>
+                      <span class="dt-c2">Categoria</span>
+                      <span class="dt-c3">Status</span>
+                      <span class="dt-c5">Valor</span>
+                    </div>
+                    <div class="dt-row">
+                      <span class="dt-c1">Marcenaria Nobre</span>
+                      <span class="dt-c2 muted">Marcenaria</span>
+                      <span class="dt-c3"><span class="badge badge-g">Fechado</span></span>
+                      <span class="dt-c5" style="color:#d4b896;font-weight:600;">R$ 18.400</span>
+                    </div>
+                    <div class="dt-row">
+                      <span class="dt-c1">Luminaria Prime</span>
+                      <span class="dt-c2 muted">Iluminação</span>
+                      <span class="dt-c3"><span class="badge badge-y">Respondido</span></span>
+                      <span class="dt-c5" style="color:#d4b896;font-weight:600;">R$ 6.900</span>
+                    </div>
+                    <div class="dt-row">
+                      <span class="dt-c1">Vidros & Cia</span>
+                      <span class="dt-c2 muted">Esquadrias</span>
+                      <span class="dt-c3"><span class="badge badge-r">Aguardando</span></span>
+                      <span class="dt-c5 muted">·</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bonus-phone-wrap">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                  <div style="font-size:10px;font-weight:700;color:var(--white);">Orçamentos</div>
+                  <div style="width:18px;height:18px;border-radius:5px;background:var(--wood);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700;">VC</div>
+                </div>
+                <div class="supplier-card">
+                  <div class="supplier-avatar" style="width:24px;height:24px;font-size:8px;">MN</div>
+                  <div style="flex:1;">
+                    <div class="supplier-name" style="font-size:9px;">Marcenaria Nobre</div>
+                    <div class="supplier-meta" style="font-size:7.5px;">Fechado</div>
+                  </div>
+                </div>
+                <div class="supplier-card">
+                  <div class="supplier-avatar" style="width:24px;height:24px;font-size:8px;background:#8a7360;">LP</div>
+                  <div style="flex:1;">
+                    <div class="supplier-name" style="font-size:9px;">Luminaria Prime</div>
+                    <div class="supplier-meta" style="font-size:7.5px;">Respondido</div>
+                  </div>
+                </div>
+                <div class="supplier-card" style="margin-bottom:0;">
+                  <div class="supplier-avatar" style="width:24px;height:24px;font-size:8px;background:#2a1608;">VC</div>
+                  <div style="flex:1;">
+                    <div class="supplier-name" style="font-size:9px;">Vidros & Cia</div>
+                    <div class="supplier-meta" style="font-size:7.5px;">Aguardando</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bonus-caption">
+          <span>Mesma conta, mesma tela</span>
+          <span>Sem instalar aplicativo</span>
+          <span>Funciona em qualquer navegador</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ INVESTIMENTO ══ -->
+  <section class="invest-section">
+    <div class="container">
+      <span class="sec-label reveal">Investimento</span>
+      <h2 class="sec-title reveal">Projeto de <em>ponta a ponta</em></h2>
+      <p class="sec-sub reveal">Entrega com o que foi apresentado e o que conversamos. As telas são protótipos e podem ser modificadas conforme a necessidade do Club.</p>
+
+      <div class="price-box reveal">
+        <div class="price-ribbon">Projeto Completo</div>
+        <div class="price-val"><sup>R$ </sup>5.497</div>
+        <div class="price-note">50% na aprovação · 50% na entrega · parcelável em até 12x no cartão</div>
+        <p class="price-desc">Plataforma VDO CLUB completa: cadastro e login de arquitetos e fornecedores, categorias e avaliação de histórico, CRM de orçamentos com pagamento integrado ao app, vitrine pública para atração de novos membros, e gateway de pagamento com split e comissionamento entre fornecedores e arquitetos.</p>
+      </div>
+
+      <div class="terms-grid reveal">
+        <div class="term-item">
+          <div class="term-label">Início</div>
+          <div class="term-val">Após aprovação formal e recebimento da primeira parcela.</div>
+        </div>
+        <div class="term-item">
+          <div class="term-label">Prazo</div>
+          <div class="term-val">20 a 30 dias para conclusão do MVP e testes.</div>
+        </div>
+        <div class="term-item">
+          <div class="term-label">Hospedagem</div>
+          <div class="term-val">Plataforma entregue hospedada, acessível via navegador sem instalação.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div><!-- /page -->
+
+<script>
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 60);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
