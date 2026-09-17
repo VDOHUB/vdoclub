@@ -90,6 +90,8 @@ export interface Database {
           supplier_id: string;
           category_id: string;
           status: BusinessStatus;
+          title: string;
+          description: string | null;
           valor_proposto: number | null;
           created_at: string;
           orcamento_at: string | null;
@@ -101,11 +103,55 @@ export interface Database {
           supplier_id: string;
           category_id: string;
           status?: BusinessStatus;
+          title: string;
+          description?: string | null;
           valor_proposto?: number | null;
           orcamento_at?: string | null;
           fechado_at?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["business_requests"]["Insert"]>;
+        Relationships: [];
+      };
+      portfolio_items: {
+        Row: {
+          id: string;
+          profile_id: string;
+          title: string;
+          description: string | null;
+          link_url: string | null;
+          photo_paths: string[];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          profile_id: string;
+          title: string;
+          description?: string | null;
+          link_url?: string | null;
+          photo_paths?: string[];
+        };
+        Update: Partial<Database["public"]["Tables"]["portfolio_items"]["Insert"]>;
+        Relationships: [];
+      };
+      business_request_attachments: {
+        Row: {
+          id: string;
+          business_request_id: string;
+          storage_path: string;
+          file_name: string;
+          mime_type: string | null;
+          size_bytes: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_request_id: string;
+          storage_path: string;
+          file_name: string;
+          mime_type?: string | null;
+          size_bytes?: number | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["business_request_attachments"]["Insert"]>;
         Relationships: [];
       };
       ratings: {

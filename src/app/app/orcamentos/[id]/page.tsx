@@ -60,6 +60,20 @@ export default async function OrcamentoDetalhePage({
     .eq("business_request_id", id)
     .maybeSingle();
 
+  const { data: attachments } = await supabase
+    .from("business_request_attachments")
+    .select("id, storage_path, file_name")
+    .eq("business_request_id", id);
+
+  const attachmentLinks = await Promise.all(
+    (attachments ?? []).map(async (a) => {
+      const { data } = await supabase.storage
+        .from("orcamento-anexos")
+        .createSignedUrl(a.storage_path, 60 * 60);
+      return { id: a.id, name: a.file_name, url: data?.signedUrl ?? null };
+    })
+  );
+
   const isSupplier = profile.role === "supplier" && req.supplier_id === user.id;
   const isArchitect = profile.role === "architect" && req.architect_id === user.id;
 
@@ -74,6 +88,29 @@ export default async function OrcamentoDetalhePage({
       </div>
 
       <ErrorNote message={error} />
+
+      <Card className="mb-4">
+        <div className="font-semibold text-white text-sm mb-1">{req.title}</div>
+        {req.description && <p className="text-sm text-cream/80 mb-3">{req.description}</p>}
+        {attachmentLinks.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {attachmentLinks.map(
+              (a) =>
+                a.url && (
+                  <a
+                    key={a.id}
+                    href={a.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs bg-wood/10 border border-wood/25 rounded-lg px-2.5 py-1.5 text-[#d4b896] hover:underline"
+                  >
+                    📎 {a.name}
+                  </a>
+                )
+            )}
+          </div>
+        )}
+      </Card>
 
       <Card className="mb-4">
         {req.valor_proposto ? (

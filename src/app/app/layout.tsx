@@ -35,6 +35,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </nav>
           </div>
           <div className="flex items-center gap-4">
+            <form action="/app/busca" className="hidden sm:block">
+              <input
+                type="search"
+                name="q"
+                placeholder="Buscar fornecedor, arquiteto ou categoria..."
+                className="w-64 bg-wood/10 border border-wood/25 rounded-lg px-3 py-1.5 text-xs text-cream placeholder:text-muted focus:outline-none focus:border-cream/40"
+              />
+            </form>
             <span className="text-xs text-muted">{profile.name}</span>
             <form action={signOut}>
               <button className="text-xs text-muted hover:text-cream transition-colors">Sair</button>

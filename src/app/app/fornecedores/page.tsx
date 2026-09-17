@@ -1,6 +1,6 @@
+import Link from "next/link";
 import { getSessionProfile } from "@/lib/auth";
-import { createBusinessRequest } from "@/lib/actions/crm";
-import { Badge, Button, Card, ErrorNote, Select, Stars } from "@/components/ui";
+import { Badge, Card, ErrorNote, Stars } from "@/components/ui";
 
 export default async function FornecedoresPage({
   searchParams,
@@ -10,7 +10,7 @@ export default async function FornecedoresPage({
   const { category, error } = await searchParams;
   const session = await getSessionProfile();
   if (!session) return null;
-  const { supabase, profile } = session;
+  const { supabase } = session;
 
   const { data: categories } = await supabase
     .from("categories")
@@ -100,35 +100,23 @@ export default async function FornecedoresPage({
             : 0;
 
           return (
-            <Card key={s.id}>
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div>
-                  <div className="font-semibold text-white text-sm">{s.name}</div>
-                  <div className="text-xs text-muted mt-0.5">{ratings.length} avaliações</div>
+            <Link key={s.id} href={`/app/perfil/${s.id}`}>
+              <Card className="hover:border-wood/60 transition-colors h-full">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div>
+                    <div className="font-semibold text-white text-sm">{s.name}</div>
+                    <div className="text-xs text-muted mt-0.5">{ratings.length} avaliações</div>
+                  </div>
+                  {avg > 0 && <Stars value={avg} />}
                 </div>
-                {avg > 0 && <Stars value={avg} />}
-              </div>
 
-              <div className="flex flex-wrap gap-1.5 mb-4">
-                {cats.map((c) => (
-                  <Badge key={c.id}>{c.name}</Badge>
-                ))}
-              </div>
-
-              {profile.role === "architect" && cats.length > 0 && (
-                <form action={createBusinessRequest} className="flex gap-2">
-                  <input type="hidden" name="supplier_id" value={s.id} />
-                  <Select name="category_id" required className="flex-1">
-                    {cats.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </Select>
-                  <Button type="submit">Solicitar</Button>
-                </form>
-              )}
-            </Card>
+                <div className="flex flex-wrap gap-1.5">
+                  {cats.map((c) => (
+                    <Badge key={c.id}>{c.name}</Badge>
+                  ))}
+                </div>
+              </Card>
+            </Link>
           );
         })}
       </div>

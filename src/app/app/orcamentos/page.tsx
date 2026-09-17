@@ -24,7 +24,7 @@ export default async function OrcamentosPage() {
 
   const { data: requests } = await supabase
     .from("business_requests")
-    .select("id, status, valor_proposto, created_at, architect_id, supplier_id, category_id")
+    .select("id, status, title, valor_proposto, created_at, architect_id, supplier_id, category_id")
     .eq(filterColumn, user.id)
     .order("created_at", { ascending: false });
 
@@ -61,9 +61,11 @@ export default async function OrcamentosPage() {
               <Card className="hover:border-wood/60 transition-colors flex items-center justify-between gap-4">
                 <div>
                   <div className="font-semibold text-white text-sm">
-                    {partyMap.get(otherId) ?? "—"}
+                    {r.title || partyMap.get(otherId) || "—"}
                   </div>
-                  <div className="text-xs text-muted mt-0.5">{catMap.get(r.category_id) ?? "—"}</div>
+                  <div className="text-xs text-muted mt-0.5">
+                    {partyMap.get(otherId) ?? "—"} · {catMap.get(r.category_id) ?? "—"}
+                  </div>
                 </div>
                 <div className="flex items-center gap-4">
                   {r.valor_proposto && (
