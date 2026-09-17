@@ -14,5 +14,9 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=confirmacao_invalida`);
+  // O Supabase já confirma o e-mail no servidor antes de chegar aqui, mesmo
+  // que a troca de sessão falhe (ex: link aberto em outro navegador). Nesses
+  // casos mandamos para uma tela de sucesso em vez de um erro assustador —
+  // o usuário só precisa fazer login normalmente em seguida.
+  return NextResponse.redirect(`${origin}/cadastro/confirmado`);
 }
