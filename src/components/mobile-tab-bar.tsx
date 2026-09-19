@@ -15,25 +15,33 @@ const icons = {
   ),
   search: <path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35" />,
   profile: <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />,
+  admin: <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z M9.5 12l2 2 3.5-4" />,
 };
 
-const tabs: { href: string; label: string; icon: keyof typeof icons }[] = [
-  { href: "/app", label: "Home", icon: "home" },
-  { href: "/app/fornecedores", label: "Fornecedores", icon: "suppliers" },
-  { href: "/app/orcamentos", label: "Orçamentos", icon: "requests" },
-  { href: "/app/busca", label: "Buscar", icon: "search" },
-  { href: "/app/perfil", label: "Perfil", icon: "profile" },
-];
-
-export function MobileTabBar() {
+export function MobileTabBar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
+
+  const tabs: { href: string; label: string; icon: keyof typeof icons }[] = [
+    { href: "/app", label: "Home", icon: "home" },
+    { href: "/app/fornecedores", label: "Fornecedores", icon: "suppliers" },
+    { href: "/app/orcamentos", label: "Orçamentos", icon: "requests" },
+    { href: "/app/busca", label: "Buscar", icon: "search" },
+    { href: "/app/perfil", label: "Perfil", icon: "profile" },
+    ...(isAdmin
+      ? [{ href: "/admin/aprovacoes", label: "Admin", icon: "admin" as const }]
+      : []),
+  ];
 
   return (
     <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#150b03] border-t border-wood/25 pb-[env(safe-area-inset-bottom)]">
       <div className="flex items-stretch justify-around">
         {tabs.map((tab) => {
           const active =
-            tab.href === "/app" ? pathname === "/app" : pathname.startsWith(tab.href);
+            tab.href === "/app"
+              ? pathname === "/app"
+              : tab.icon === "admin"
+              ? pathname.startsWith("/admin")
+              : pathname.startsWith(tab.href);
           return (
             <Link
               key={tab.href}

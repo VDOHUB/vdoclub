@@ -56,7 +56,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="max-w-5xl mx-auto px-6 py-10 w-full">{children}</div>
       </main>
-      <MobileTabBar />
+      <MobileTabBar isAdmin={profile.role === "admin"} />
     </div>
   );
 }
