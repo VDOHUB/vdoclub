@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionProfile } from "@/lib/auth";
 import { signOut } from "@/lib/actions/auth";
+import { MobileTabBar } from "@/components/mobile-tab-bar";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await getSessionProfile();
@@ -14,10 +15,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="border-b border-wood/25 bg-black/20">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/app/orcamentos" className="font-serif text-white text-sm font-bold">
+            <Link href="/app" className="font-serif text-white text-sm font-bold">
               VDO CLUB
             </Link>
-            <nav className="flex items-center gap-6 text-sm text-muted">
+            <nav className="hidden sm:flex items-center gap-6 text-sm text-muted">
               <Link href="/app/fornecedores" className="hover:text-cream transition-colors">
                 Fornecedores
               </Link>
@@ -35,24 +36,27 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <form action="/app/busca" className="hidden sm:block">
-              <input
-                type="search"
-                name="q"
-                placeholder="Buscar fornecedor, arquiteto ou categoria..."
-                className="w-64 bg-wood/10 border border-wood/25 rounded-lg px-3 py-1.5 text-xs text-cream placeholder:text-muted focus:outline-none focus:border-cream/40"
-              />
-            </form>
-            <span className="text-xs text-muted">{profile.name}</span>
+            <Link
+              href="/app/busca"
+              aria-label="Buscar"
+              className="text-muted hover:text-cream transition-colors"
+            >
+              <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+            </Link>
+            <span className="hidden sm:inline text-xs text-muted">{profile.name}</span>
             <form action={signOut}>
               <button className="text-xs text-muted hover:text-cream transition-colors">Sair</button>
             </form>
           </div>
         </div>
       </header>
-      <main className="flex-1">
+      <main className="flex-1 pb-20 sm:pb-0">
         <div className="max-w-5xl mx-auto px-6 py-10 w-full">{children}</div>
       </main>
+      <MobileTabBar />
     </div>
   );
 }
