@@ -108,15 +108,14 @@ export default async function FornecedoresPage({
                     <div>
                       <div className="font-semibold text-white text-sm">{s.name}</div>
                       <div className="text-xs text-muted mt-0.5">{ratings.length} avaliações</div>
+                      {avg > 0 && <Stars value={avg} />}
                     </div>
                   </div>
-                  {avg > 0 && <Stars value={avg} />}
-                </div>
-
-                <div className="flex flex-wrap gap-1.5">
-                  {cats.map((c) => (
-                    <Badge key={c.id}>{c.name}</Badge>
-                  ))}
+                  <div className="flex flex-wrap justify-end gap-1.5">
+                    {cats.map((c) => (
+                      <Badge key={c.id}>{c.name}</Badge>
+                    ))}
+                  </div>
                 </div>
               </Card>
             </Link>
