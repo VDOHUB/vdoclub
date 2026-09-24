@@ -102,20 +102,23 @@ export default async function FornecedoresPage({
           return (
             <Link key={s.id} href={`/app/perfil/${s.id}`}>
               <Card className="hover:border-wood/60 transition-colors h-full">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <Avatar url={s.avatar_url} name={s.name} size={36} />
-                    <div>
-                      <div className="font-semibold text-white text-sm">{s.name}</div>
-                      <div className="text-xs text-muted mt-0.5">{ratings.length} avaliações</div>
+                    <div className="min-w-0">
+                      <div className="font-semibold text-white text-sm truncate">{s.name}</div>
+                      <div className="text-xs text-muted mt-0.5 whitespace-nowrap">{ratings.length} avaliações</div>
                       {avg > 0 && <Stars value={avg} />}
                     </div>
                   </div>
-                  <div className="flex flex-wrap justify-end gap-1.5">
-                    {cats.map((c) => (
-                      <Badge key={c.id}>{c.name}</Badge>
-                    ))}
-                  </div>
+                  {cats.length > 0 && (
+                    <Badge>
+                      <span className="whitespace-nowrap">
+                        {cats[0].name}
+                        {cats.length > 1 ? ` e +${cats.length - 1}` : ""}
+                      </span>
+                    </Badge>
+                  )}
                 </div>
               </Card>
             </Link>
