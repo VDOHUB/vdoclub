@@ -15,6 +15,15 @@ export default async function CadastroPage({
     .eq("active", true)
     .order("name");
 
+  const { data: referral } = ref
+    ? await supabase
+        .from("referral_links")
+        .select("invited_name, invited_phone, invited_activity, profiles(name)")
+        .eq("token", ref)
+        .eq("active", true)
+        .maybeSingle()
+    : { data: null };
+
   return (
     <div className="flex-1 flex items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">
@@ -24,15 +33,23 @@ export default async function CadastroPage({
           </div>
           <h1 className="font-serif text-xl text-white">Faça seu cadastro</h1>
           <p className="text-xs text-muted mt-1">
-            {ref ? "Cadastro por convite — aprovação automática" : "Sujeito à aprovação do time VDO"}
+            {referral
+              ? `Você foi indicado por ${referral.profiles?.name ?? "um arquiteto do Club"}`
+              : "Sujeito à aprovação do time VDO"}
           </p>
         </div>
 
         <CadastroForm
           categories={categories ?? []}
           errorMessage={error}
-          defaultRole={role === "supplier" ? "supplier" : "architect"}
+          defaultRole={referral ? "supplier" : role === "supplier" ? "supplier" : "architect"}
           referralToken={ref}
+          lockRole={Boolean(referral)}
+          prefill={
+            referral
+              ? { name: referral.invited_name ?? "", phone: referral.invited_phone ?? "" }
+              : undefined
+          }
         />
 
         <p className="text-center text-sm text-muted mt-6">

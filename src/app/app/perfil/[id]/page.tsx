@@ -1,7 +1,18 @@
 import { notFound } from "next/navigation";
 import { getSessionProfile } from "@/lib/auth";
-import { createBusinessRequest } from "@/lib/actions/crm";
-import { Badge, Button, Card, ErrorNote, Input, Label, Select, Stars } from "@/components/ui";
+import { createBusinessRequest, submitRating } from "@/lib/actions/crm";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  ErrorNote,
+  Input,
+  Label,
+  Select,
+  StarPicker,
+  Stars,
+} from "@/components/ui";
 
 const roleLabel: Record<string, string> = {
   architect: "Arquiteto",
@@ -20,15 +31,19 @@ export default async function PerfilPublicoPage({
   const { error } = await searchParams;
   const session = await getSessionProfile();
   if (!session) return null;
-  const { supabase, profile: viewer } = session;
+  const { supabase, profile: viewer, user } = session;
 
   const { data: target } = await supabase
     .from("profiles")
-    .select("id, name, role, status")
+    .select("id, name, role, status, avatar_url, referred_by")
     .eq("id", id)
     .single();
 
   if (!target || target.status !== "approved") notFound();
+
+  const { data: referrer } = target.referred_by
+    ? await supabase.from("profiles").select("name").eq("id", target.referred_by).single()
+    : { data: null };
 
   const { data: portfolio } = await supabase
     .from("portfolio_items")
@@ -54,6 +69,17 @@ export default async function PerfilPublicoPage({
     : 0;
 
   const canRequest = viewer.role === "architect" && isSupplier && (supplierCategories ?? []).length > 0;
+  const canRate = viewer.role === "architect" && isSupplier && target.id !== user.id;
+
+  const { data: existingDirectRating } = canRate
+    ? await supabase
+        .from("ratings")
+        .select("id, stars, comment, status")
+        .eq("architect_id", user.id)
+        .eq("supplier_id", target.id)
+        .is("business_request_id", null)
+        .maybeSingle()
+    : { data: null };
 
   const photoUrls = (portfolio ?? []).map((item) => ({
     ...item,
@@ -65,27 +91,79 @@ export default async function PerfilPublicoPage({
 
   return (
     <div className="max-w-2xl">
-      <div className="flex items-start justify-between gap-4 mb-8">
-        <div>
-          <h1 className="font-serif text-2xl text-white mb-1">{target.name}</h1>
-          <div className="flex items-center gap-2">
+      <div className="flex items-start gap-4 mb-2">
+        <Avatar url={target.avatar_url} name={target.name} size={56} />
+        <div className="flex-1">
+          <div className="flex items-center gap-2 flex-wrap mb-1">
+            <h1 className="font-serif text-xl text-white">{target.name}</h1>
             <Badge>{roleLabel[target.role]}</Badge>
-            {isSupplier && avg > 0 && <Stars value={avg} />}
+            {isSupplier &&
+              (supplierCategories ?? []).map((c) => <Badge key={c.category_id}>{c.categories?.name}</Badge>)}
           </div>
+          {isSupplier && (
+            <div className="flex items-center gap-2">
+              {avg > 0 ? <Stars value={avg} /> : <span className="text-xs text-muted">Sem avaliações ainda</span>}
+              <span className="text-xs text-muted">({(approvedRatings ?? []).length})</span>
+            </div>
+          )}
+          {referrer && (
+            <p className="text-xs text-muted mt-1">Indicado por {referrer.name}</p>
+          )}
         </div>
       </div>
 
       <ErrorNote message={error} />
 
-      {isSupplier && (supplierCategories ?? []).length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-6">
-          {(supplierCategories ?? []).map((c) => (
-            <Badge key={c.category_id}>{c.categories?.name}</Badge>
-          ))}
-        </div>
-      )}
-
       {canRequest && <NovoOrcamentoForm supplierId={target.id} categories={supplierCategories ?? []} />}
+
+      {canRate && (
+        <Card className="mb-4">
+          <h2 className="text-sm font-semibold text-white mb-3">Avaliar fornecedor</h2>
+          {existingDirectRating ? (
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <Stars value={existingDirectRating.stars} />
+                <Badge
+                  tone={
+                    existingDirectRating.status === "approved"
+                      ? "green"
+                      : existingDirectRating.status === "rejected"
+                      ? "red"
+                      : "yellow"
+                  }
+                >
+                  {existingDirectRating.status === "approved"
+                    ? "Aprovada"
+                    : existingDirectRating.status === "rejected"
+                    ? "Rejeitada"
+                    : "Em análise"}
+                </Badge>
+              </div>
+              {existingDirectRating.comment && (
+                <p className="text-sm text-muted">{existingDirectRating.comment}</p>
+              )}
+            </div>
+          ) : (
+            <form action={submitRating} className="space-y-3">
+              <input type="hidden" name="supplier_id" value={target.id} />
+              <input type="hidden" name="back_to" value={`/app/perfil/${target.id}`} />
+              <div>
+                <Label>Nota</Label>
+                <StarPicker name="stars" required />
+              </div>
+              <div>
+                <Label>Comentário</Label>
+                <textarea
+                  name="comment"
+                  rows={3}
+                  className="w-full bg-wood/10 border border-wood/25 rounded-lg px-3.5 py-2.5 text-sm text-cream placeholder:text-muted focus:outline-none focus:border-cream/40"
+                />
+              </div>
+              <Button type="submit">Enviar avaliação</Button>
+            </form>
+          )}
+        </Card>
+      )}
 
       <div className="mt-8">
         <h2 className="text-sm font-semibold text-white mb-4">Projetos realizados</h2>
@@ -129,7 +207,7 @@ function NovoOrcamentoForm({
   categories: { category_id: string; categories: { id: string; name: string } | null }[];
 }) {
   return (
-    <Card className="mb-2">
+    <Card className="mb-4">
       <h2 className="text-sm font-semibold text-white mb-3">+ Novo orçamento</h2>
       <form action={createBusinessRequest} className="space-y-3" encType="multipart/form-data">
         <input type="hidden" name="supplier_id" value={supplierId} />

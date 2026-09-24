@@ -70,17 +70,19 @@ export async function submitOrcamento(formData: FormData) {
 
   const id = String(formData.get("id"));
   const valor = Number(formData.get("valor_proposto"));
+  const prazoDias = formData.get("prazo_dias") ? Number(formData.get("prazo_dias")) : null;
 
   const { error } = await session.supabase
     .from("business_requests")
     .update({
-      status: "orcamento",
+      status: "pendente_aprovacao",
       valor_proposto: valor,
-      orcamento_at: new Date().toISOString(),
+      prazo_dias: prazoDias,
+      pendente_aprovacao_at: new Date().toISOString(),
     })
     .eq("id", id)
     .eq("supplier_id", session.user.id)
-    .eq("status", "indicou");
+    .eq("status", "orcado");
 
   if (error) redirect(`/app/orcamentos/${id}?error=${encodeURIComponent(error.message)}`);
 
@@ -88,7 +90,7 @@ export async function submitOrcamento(formData: FormData) {
   redirect(`/app/orcamentos/${id}`);
 }
 
-export async function marcarFechado(formData: FormData) {
+export async function approveOrcamento(formData: FormData) {
   const session = await getSessionProfile();
   if (!session || session.profile.role !== "architect") redirect("/login");
 
@@ -96,10 +98,29 @@ export async function marcarFechado(formData: FormData) {
 
   const { error } = await session.supabase
     .from("business_requests")
-    .update({ status: "fechado", fechado_at: new Date().toISOString() })
+    .update({ status: "aprovado", aprovado_at: new Date().toISOString() })
     .eq("id", id)
     .eq("architect_id", session.user.id)
-    .eq("status", "orcamento");
+    .eq("status", "pendente_aprovacao");
+
+  if (error) redirect(`/app/orcamentos/${id}?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath(`/app/orcamentos/${id}`);
+  redirect(`/app/orcamentos/${id}`);
+}
+
+export async function marcarConcluido(formData: FormData) {
+  const session = await getSessionProfile();
+  if (!session || session.profile.role !== "architect") redirect("/login");
+
+  const id = String(formData.get("id"));
+
+  const { error } = await session.supabase
+    .from("business_requests")
+    .update({ status: "concluido", concluido_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("architect_id", session.user.id)
+    .eq("status", "aprovado");
 
   if (error) redirect(`/app/orcamentos/${id}?error=${encodeURIComponent(error.message)}`);
 
@@ -111,10 +132,11 @@ export async function submitRating(formData: FormData) {
   const session = await getSessionProfile();
   if (!session || session.profile.role !== "architect") redirect("/login");
 
-  const businessRequestId = String(formData.get("business_request_id"));
+  const businessRequestId = String(formData.get("business_request_id") ?? "").trim() || null;
   const supplierId = String(formData.get("supplier_id"));
   const stars = Number(formData.get("stars"));
   const comment = String(formData.get("comment") ?? "").trim();
+  const backTo = String(formData.get("back_to") ?? `/app/perfil/${supplierId}`);
 
   const { error } = await session.supabase.from("ratings").insert({
     business_request_id: businessRequestId,
@@ -125,9 +147,19 @@ export async function submitRating(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/app/orcamentos/${businessRequestId}?error=${encodeURIComponent(error.message)}`);
+    redirect(`${backTo}?error=${encodeURIComponent(error.message)}`);
   }
 
-  revalidatePath(`/app/orcamentos/${businessRequestId}`);
-  redirect(`/app/orcamentos/${businessRequestId}`);
+  if (businessRequestId) {
+    await session.supabase
+      .from("business_requests")
+      .update({ status: "avaliado", avaliado_at: new Date().toISOString() })
+      .eq("id", businessRequestId)
+      .eq("architect_id", session.user.id)
+      .eq("status", "concluido");
+    revalidatePath(`/app/orcamentos/${businessRequestId}`);
+  }
+
+  revalidatePath(backTo);
+  redirect(backTo);
 }

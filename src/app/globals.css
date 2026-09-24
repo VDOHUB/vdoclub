@@ -2,6 +2,7 @@
 
 :root {
   --wood: #5a3822;
+  --wood-light: #9c6a3e;
   --wood-dark: #2a1608;
   --ink: #1a0e05;
   --ink2: #3a2412;
@@ -19,6 +20,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-wood: var(--wood);
+  --color-wood-light: var(--wood-light);
   --color-wood-dark: var(--wood-dark);
   --color-ink: var(--ink);
   --color-ink2: var(--ink2);
@@ -35,4 +37,30 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
+}
+
+/* ── STAR PICKER (avaliação, CSS puro, sem JS) ── */
+.star-picker {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  gap: 2px;
+}
+.star-picker input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.star-picker label {
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--wood);
+  transition: color 0.15s;
+}
+.star-picker input:checked ~ label,
+.star-picker label:hover,
+.star-picker label:hover ~ label {
+  color: #d4b896;
 }

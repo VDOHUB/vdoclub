@@ -1,19 +1,7 @@
 import Link from "next/link";
 import { getSessionProfile } from "@/lib/auth";
 import { Badge, Card } from "@/components/ui";
-import type { BusinessStatus } from "@/lib/supabase/types";
-
-const statusTone: Record<BusinessStatus, "yellow" | "wood" | "green"> = {
-  indicou: "yellow",
-  orcamento: "wood",
-  fechado: "green",
-};
-
-const statusLabel: Record<BusinessStatus, string> = {
-  indicou: "Aguardando",
-  orcamento: "Respondido",
-  fechado: "Fechado",
-};
+import { statusLabel, statusTone } from "@/lib/status";
 
 export default async function OrcamentosPage() {
   const session = await getSessionProfile();

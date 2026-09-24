@@ -1,19 +1,18 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getSessionProfile } from "@/lib/auth";
-import { marcarFechado, submitOrcamento, submitRating } from "@/lib/actions/crm";
-import { Badge, Button, Card, ErrorNote, Input, Label, Stars } from "@/components/ui";
-import type { BusinessStatus } from "@/lib/supabase/types";
-
-const statusTone: Record<BusinessStatus, "yellow" | "wood" | "green"> = {
-  indicou: "yellow",
-  orcamento: "wood",
-  fechado: "green",
-};
-const statusLabel: Record<BusinessStatus, string> = {
-  indicou: "Aguardando resposta",
-  orcamento: "Aguardando aprovação",
-  fechado: "Fechado",
-};
+import { approveOrcamento, marcarConcluido, submitOrcamento, submitRating } from "@/lib/actions/crm";
+import {
+  Badge,
+  Button,
+  Card,
+  ErrorNote,
+  Input,
+  Label,
+  StarPicker,
+  StatusStepper,
+  Stars,
+} from "@/components/ui";
 
 export default async function OrcamentoDetalhePage({
   params,
@@ -59,6 +58,11 @@ export default async function OrcamentoDetalhePage({
     .select("*")
     .eq("business_request_id", id)
     .maybeSingle();
+  const { data: settings } = await supabase
+    .from("app_settings")
+    .select("commission_percent")
+    .eq("id", "default")
+    .single();
 
   const { data: attachments } = await supabase
     .from("business_request_attachments")
@@ -76,101 +80,146 @@ export default async function OrcamentoDetalhePage({
 
   const isSupplier = profile.role === "supplier" && req.supplier_id === user.id;
   const isArchitect = profile.role === "architect" && req.architect_id === user.id;
+  const commissionPercent = settings?.commission_percent ?? 0;
+  const commissionValue = req.valor_proposto
+    ? (Number(req.valor_proposto) * commissionPercent) / 100
+    : null;
 
   return (
     <div className="max-w-xl">
       <div className="mb-6">
         <div className="text-xs text-muted mb-1">{category?.name}</div>
-        <h1 className="font-serif text-2xl text-white mb-2">
-          {isSupplier ? architect?.name : supplier?.name}
-        </h1>
-        <Badge tone={statusTone[req.status]}>{statusLabel[req.status]}</Badge>
+        <h1 className="font-serif text-2xl text-white mb-4">{req.title}</h1>
+        <StatusStepper status={req.status} />
       </div>
 
       <ErrorNote message={error} />
 
-      <Card className="mb-4">
-        <div className="font-semibold text-white text-sm mb-1">{req.title}</div>
-        {req.description && <p className="text-sm text-cream/80 mb-3">{req.description}</p>}
-        {attachmentLinks.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {attachmentLinks.map(
-              (a) =>
-                a.url && (
-                  <a
-                    key={a.id}
-                    href={a.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs bg-wood/10 border border-wood/25 rounded-lg px-2.5 py-1.5 text-[#d4b896] hover:underline"
-                  >
-                    📎 {a.name}
-                  </a>
-                )
-            )}
-          </div>
-        )}
-      </Card>
-
-      <Card className="mb-4">
-        {req.valor_proposto ? (
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-cream/80">Valor proposto</span>
-            <span className="text-lg font-bold text-[#d4b896]">
-              R$ {Number(req.valor_proposto).toLocaleString("pt-BR")}
-            </span>
-          </div>
-        ) : (
-          <p className="text-sm text-muted">Ainda sem valor proposto.</p>
-        )}
-      </Card>
-
-      {isSupplier && req.status === "indicou" && (
+      {req.description && (
         <Card className="mb-4">
-          <h2 className="text-sm font-semibold text-white mb-3">Responder com valor</h2>
-          <form action={submitOrcamento} className="flex gap-2">
-            <input type="hidden" name="id" value={req.id} />
-            <div className="flex-1">
-              <Label>Valor (R$)</Label>
-              <Input type="number" name="valor_proposto" step="0.01" min="0" required />
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-cream/70 mb-1.5">
+            Observações
+          </div>
+          <p className="text-sm text-cream/80">{req.description}</p>
+        </Card>
+      )}
+
+      <Card className="mb-4">
+        <dl className="text-sm space-y-3">
+          <div className="flex justify-between">
+            <dt className="text-muted">Fornecedor</dt>
+            <dd className="text-white font-medium">
+              <Link href={`/app/perfil/${req.supplier_id}`} className="hover:underline">
+                {supplier?.name}
+              </Link>
+            </dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-muted">Arquiteto</dt>
+            <dd className="text-white font-medium">{architect?.name}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-muted">Valor</dt>
+            <dd className="text-[#d4b896] font-bold">
+              {req.valor_proposto
+                ? `R$ ${Number(req.valor_proposto).toLocaleString("pt-BR")}`
+                : "—"}
+            </dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-muted">Comissão VDO ({commissionPercent}%)</dt>
+            <dd className="text-cream/80">
+              {commissionValue !== null
+                ? `R$ ${commissionValue.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}`
+                : "—"}
+            </dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-muted">Prazo</dt>
+            <dd className="text-cream/80">{req.prazo_dias ? `${req.prazo_dias} dias` : "—"}</dd>
+          </div>
+        </dl>
+
+        {attachmentLinks.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-wood/20">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-cream/70 mb-2">
+              Anexo
             </div>
-            <Button type="submit" className="self-end">
-              Enviar orçamento
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              {attachmentLinks.map(
+                (a) =>
+                  a.url && (
+                    <a
+                      key={a.id}
+                      href={a.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs bg-wood/10 border border-wood/25 rounded-lg px-2.5 py-1.5 text-[#d4b896] hover:underline"
+                    >
+                      📎 {a.name}
+                    </a>
+                  )
+              )}
+            </div>
+          </div>
+        )}
+      </Card>
+
+      {isSupplier && req.status === "orcado" && (
+        <Card className="mb-4">
+          <h2 className="text-sm font-semibold text-white mb-3">Responder com valor e prazo</h2>
+          <form action={submitOrcamento} className="space-y-3">
+            <input type="hidden" name="id" value={req.id} />
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Label>Valor (R$)</Label>
+                <Input type="number" name="valor_proposto" step="0.01" min="0" required />
+              </div>
+              <div className="w-28">
+                <Label>Prazo (dias)</Label>
+                <Input type="number" name="prazo_dias" min="1" />
+              </div>
+            </div>
+            <Button type="submit">Enviar orçamento</Button>
           </form>
         </Card>
       )}
 
-      {isArchitect && req.status === "orcamento" && (
+      {isArchitect && req.status === "pendente_aprovacao" && (
         <Card className="mb-4">
-          <h2 className="text-sm font-semibold text-white mb-3">Aprovar fechamento</h2>
+          <h2 className="text-sm font-semibold text-white mb-3">Aprovar orçamento</h2>
           <p className="text-xs text-muted mb-3">
             O pagamento ainda não é feito pelo app nesta fase — combine diretamente com o
-            fornecedor e marque como fechado quando o negócio for concluído.
+            fornecedor.
           </p>
-          <form action={marcarFechado}>
+          <form action={approveOrcamento}>
             <input type="hidden" name="id" value={req.id} />
-            <Button type="submit">Marcar como fechado</Button>
+            <Button type="submit">Aprovar</Button>
           </form>
         </Card>
       )}
 
-      {isArchitect && req.status === "fechado" && !rating && (
+      {isArchitect && req.status === "aprovado" && (
+        <Card className="mb-4">
+          <h2 className="text-sm font-semibold text-white mb-3">Marcar como concluído</h2>
+          <p className="text-xs text-muted mb-3">Quando o serviço combinado estiver finalizado.</p>
+          <form action={marcarConcluido}>
+            <input type="hidden" name="id" value={req.id} />
+            <Button type="submit">Marcar concluído</Button>
+          </form>
+        </Card>
+      )}
+
+      {isArchitect && req.status === "concluido" && !rating && (
         <Card className="mb-4">
           <h2 className="text-sm font-semibold text-white mb-3">Avaliar fornecedor</h2>
           <form action={submitRating} className="space-y-3">
             <input type="hidden" name="business_request_id" value={req.id} />
             <input type="hidden" name="supplier_id" value={req.supplier_id} />
+            <input type="hidden" name="back_to" value={`/app/orcamentos/${req.id}`} />
             <div>
               <Label>Nota</Label>
-              <div className="flex gap-3">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <label key={n} className="flex items-center gap-1 text-sm text-cream">
-                    <input type="radio" name="stars" value={n} required className="accent-[#d4b896]" />
-                    {n}
-                  </label>
-                ))}
-              </div>
+              <StarPicker name="stars" required />
             </div>
             <div>
               <Label>Comentário</Label>
@@ -187,7 +236,7 @@ export default async function OrcamentoDetalhePage({
 
       {rating && (
         <Card>
-          <h2 className="text-sm font-semibold text-white mb-2">Sua avaliação</h2>
+          <h2 className="text-sm font-semibold text-white mb-2">Avaliação</h2>
           <div className="flex items-center gap-3 mb-2">
             <Stars value={rating.stars} />
             <Badge tone={rating.status === "approved" ? "green" : rating.status === "rejected" ? "red" : "yellow"}>

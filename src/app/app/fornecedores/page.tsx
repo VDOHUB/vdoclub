@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSessionProfile } from "@/lib/auth";
-import { Badge, Card, ErrorNote, Stars } from "@/components/ui";
+import { Avatar, Badge, Card, ErrorNote, Stars } from "@/components/ui";
 
 export default async function FornecedoresPage({
   searchParams,
@@ -20,7 +20,7 @@ export default async function FornecedoresPage({
 
   const { data: suppliers } = await supabase
     .from("profiles")
-    .select("id, name, phone")
+    .select("id, name, phone, avatar_url")
     .eq("role", "supplier")
     .eq("status", "approved")
     .order("name");
@@ -103,9 +103,12 @@ export default async function FornecedoresPage({
             <Link key={s.id} href={`/app/perfil/${s.id}`}>
               <Card className="hover:border-wood/60 transition-colors h-full">
                 <div className="flex items-start justify-between gap-3 mb-3">
-                  <div>
-                    <div className="font-semibold text-white text-sm">{s.name}</div>
-                    <div className="text-xs text-muted mt-0.5">{ratings.length} avaliações</div>
+                  <div className="flex items-center gap-3">
+                    <Avatar url={s.avatar_url} name={s.name} size={36} />
+                    <div>
+                      <div className="font-semibold text-white text-sm">{s.name}</div>
+                      <div className="text-xs text-muted mt-0.5">{ratings.length} avaliações</div>
+                    </div>
                   </div>
                   {avg > 0 && <Stars value={avg} />}
                 </div>

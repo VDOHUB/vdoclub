@@ -11,11 +11,15 @@ export function CadastroForm({
   errorMessage,
   defaultRole,
   referralToken,
+  lockRole = false,
+  prefill,
 }: {
   categories: Category[];
   errorMessage?: string;
   defaultRole: "architect" | "supplier";
   referralToken?: string;
+  lockRole?: boolean;
+  prefill?: { name: string; phone: string };
 }) {
   const [role, setRole] = useState<"architect" | "supplier">(defaultRole);
 
@@ -23,30 +27,36 @@ export function CadastroForm({
     <Card>
       <ErrorNote message={errorMessage} />
 
-      <div className="flex gap-2 mb-5">
-        <button
-          type="button"
-          onClick={() => setRole("architect")}
-          className={`flex-1 text-center py-2.5 rounded-lg text-sm font-semibold border transition-colors ${
-            role === "architect"
-              ? "bg-[#d4b896]/20 border-[#d4b896]/50 text-[#d4b896]"
-              : "bg-wood/10 border-wood/25 text-muted"
-          }`}
-        >
-          Arquiteto
-        </button>
-        <button
-          type="button"
-          onClick={() => setRole("supplier")}
-          className={`flex-1 text-center py-2.5 rounded-lg text-sm font-semibold border transition-colors ${
-            role === "supplier"
-              ? "bg-[#d4b896]/20 border-[#d4b896]/50 text-[#d4b896]"
-              : "bg-wood/10 border-wood/25 text-muted"
-          }`}
-        >
-          Fornecedor
-        </button>
-      </div>
+      {lockRole ? (
+        <div className="mb-5 text-center py-2.5 rounded-lg text-sm font-semibold border bg-[#d4b896]/20 border-[#d4b896]/50 text-[#d4b896]">
+          Cadastro de fornecedor
+        </div>
+      ) : (
+        <div className="flex gap-2 mb-5">
+          <button
+            type="button"
+            onClick={() => setRole("architect")}
+            className={`flex-1 text-center py-2.5 rounded-lg text-sm font-semibold border transition-colors ${
+              role === "architect"
+                ? "bg-[#d4b896]/20 border-[#d4b896]/50 text-[#d4b896]"
+                : "bg-wood/10 border-wood/25 text-muted"
+            }`}
+          >
+            Arquiteto
+          </button>
+          <button
+            type="button"
+            onClick={() => setRole("supplier")}
+            className={`flex-1 text-center py-2.5 rounded-lg text-sm font-semibold border transition-colors ${
+              role === "supplier"
+                ? "bg-[#d4b896]/20 border-[#d4b896]/50 text-[#d4b896]"
+                : "bg-wood/10 border-wood/25 text-muted"
+            }`}
+          >
+            Fornecedor
+          </button>
+        </div>
+      )}
 
       <form action={signUp} className="space-y-4">
         <input type="hidden" name="role" value={role} />
@@ -54,11 +64,17 @@ export function CadastroForm({
 
         <div>
           <Label>Nome</Label>
-          <Input type="text" name="name" required />
+          <Input type="text" name="name" required defaultValue={prefill?.name} />
         </div>
         <div>
           <Label>Telefone</Label>
-          <Input type="tel" name="phone" required placeholder="(00) 00000-0000" />
+          <Input
+            type="tel"
+            name="phone"
+            required
+            placeholder="(00) 00000-0000"
+            defaultValue={prefill?.phone}
+          />
         </div>
         <div>
           <Label>E-mail</Label>

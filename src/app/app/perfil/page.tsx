@@ -1,6 +1,7 @@
 import { getSessionProfile } from "@/lib/auth";
-import { addPortfolioItem, deletePortfolioItem } from "@/lib/actions/portfolio";
-import { Badge, Button, Card, ErrorNote, Input, Label } from "@/components/ui";
+import { addPortfolioItem, deletePortfolioItem, updateAvatar } from "@/lib/actions/portfolio";
+import { createArchitectReferral } from "@/lib/actions/referrals";
+import { Avatar, Badge, Button, Card, ErrorNote, Input, Label } from "@/components/ui";
 
 const roleLabel: Record<string, string> = {
   architect: "Arquiteto",
@@ -39,6 +40,17 @@ export default async function PerfilPage({
     ),
   }));
 
+  const { data: myReferrals } =
+    profile.role === "architect"
+      ? await supabase
+          .from("referral_links")
+          .select("id, token, invited_name, invited_activity, uses_count")
+          .eq("created_by", user.id)
+          .order("created_at", { ascending: false })
+      : { data: [] };
+
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
   return (
     <div className="max-w-xl">
       <h1 className="font-serif text-2xl text-white mb-6">Meu perfil</h1>
@@ -47,12 +59,28 @@ export default async function PerfilPage({
 
       <Card>
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="font-semibold text-white">{profile.name}</div>
-            <div className="text-xs text-muted mt-0.5">{user.email}</div>
+          <div className="flex items-center gap-3">
+            <Avatar url={profile.avatar_url} name={profile.name} size={48} />
+            <div>
+              <div className="font-semibold text-white">{profile.name}</div>
+              <div className="text-xs text-muted mt-0.5">{user.email}</div>
+            </div>
           </div>
           <Badge>{roleLabel[profile.role]}</Badge>
         </div>
+
+        <form action={updateAvatar} encType="multipart/form-data" className="flex items-center gap-2 mb-4">
+          <input
+            type="file"
+            name="avatar"
+            accept="image/*"
+            className="flex-1 text-xs text-muted file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border file:border-wood/25 file:bg-wood/10 file:text-cream file:text-xs"
+          />
+          <Button type="submit" variant="ghost">
+            Trocar foto
+          </Button>
+        </form>
+
         <dl className="text-sm text-cream/80 space-y-2">
           <div className="flex justify-between">
             <dt className="text-muted">Telefone</dt>
@@ -154,6 +182,55 @@ export default async function PerfilPage({
           ))}
         </div>
       </div>
+
+      {profile.role === "architect" && (
+        <div className="mt-8">
+          <h2 className="text-sm font-semibold text-white mb-4">Indicar fornecedor</h2>
+
+          <Card className="mb-4">
+            <p className="text-xs text-muted mb-4">
+              Preencha os dados do fornecedor que você quer indicar. Vamos gerar um link — ele
+              ainda passa pela aprovação do time VDO, mas já fica marcado como indicado por você.
+            </p>
+            <form action={createArchitectReferral} className="space-y-3">
+              <div>
+                <Label>Nome</Label>
+                <Input type="text" name="invited_name" required />
+              </div>
+              <div>
+                <Label>Telefone</Label>
+                <Input type="tel" name="invited_phone" placeholder="(00) 00000-0000" />
+              </div>
+              <div>
+                <Label>Atividade</Label>
+                <Input type="text" name="invited_activity" placeholder="Ex: Marcenaria sob medida" />
+              </div>
+              <Button type="submit">Gerar link de indicação</Button>
+            </form>
+          </Card>
+
+          <div className="space-y-2">
+            {(myReferrals ?? []).map((r) => (
+              <Card key={r.id} className="py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">{r.invited_name}</div>
+                    {r.invited_activity && (
+                      <div className="text-xs text-muted">{r.invited_activity}</div>
+                    )}
+                  </div>
+                  <Badge tone={r.uses_count > 0 ? "green" : "wood"}>
+                    {r.uses_count > 0 ? "Cadastrado" : "Aguardando"}
+                  </Badge>
+                </div>
+                <div className="text-xs text-cream/70 font-mono mt-2 break-all">
+                  {`${site}/cadastro?ref=${r.token}`}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

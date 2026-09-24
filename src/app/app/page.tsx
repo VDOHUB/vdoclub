@@ -1,18 +1,7 @@
 import Link from "next/link";
 import { getSessionProfile } from "@/lib/auth";
 import { Badge, Card } from "@/components/ui";
-import type { BusinessStatus } from "@/lib/supabase/types";
-
-const statusTone: Record<BusinessStatus, "yellow" | "wood" | "green"> = {
-  indicou: "yellow",
-  orcamento: "wood",
-  fechado: "green",
-};
-const statusLabel: Record<BusinessStatus, string> = {
-  indicou: "Aguardando",
-  orcamento: "Respondido",
-  fechado: "Fechado",
-};
+import { statusLabel, statusTone } from "@/lib/status";
 
 export default async function HomePage() {
   const session = await getSessionProfile();
@@ -28,7 +17,7 @@ export default async function HomePage() {
     .order("created_at", { ascending: false })
     .limit(3);
 
-  const pendingCount = (requests ?? []).filter((r) => r.status !== "fechado").length;
+  const pendingCount = (requests ?? []).filter((r) => r.status !== "concluido" && r.status !== "avaliado").length;
 
   return (
     <div className="max-w-xl">

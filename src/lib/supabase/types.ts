@@ -1,6 +1,6 @@
 export type ProfileRole = "architect" | "supplier" | "admin";
 export type ProfileStatus = "pending_review" | "approved" | "rejected";
-export type BusinessStatus = "indicou" | "orcamento" | "fechado";
+export type BusinessStatus = "orcado" | "pendente_aprovacao" | "aprovado" | "concluido" | "avaliado";
 export type RatingStatus = "pending_review" | "approved" | "rejected";
 
 export interface Database {
@@ -16,6 +16,8 @@ export interface Database {
           approved_by: string | null;
           approved_at: string | null;
           referral_token_used: string | null;
+          referred_by: string | null;
+          avatar_url: string | null;
           created_at: string;
         };
         Insert: {
@@ -27,6 +29,8 @@ export interface Database {
           approved_by?: string | null;
           approved_at?: string | null;
           referral_token_used?: string | null;
+          referred_by?: string | null;
+          avatar_url?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
         Relationships: [];
@@ -71,6 +75,9 @@ export interface Database {
           created_by: string;
           active: boolean;
           uses_count: number;
+          invited_name: string | null;
+          invited_phone: string | null;
+          invited_activity: string | null;
           created_at: string;
         };
         Insert: {
@@ -79,9 +86,20 @@ export interface Database {
           created_by: string;
           active?: boolean;
           uses_count?: number;
+          invited_name?: string | null;
+          invited_phone?: string | null;
+          invited_activity?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["referral_links"]["Insert"]>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "referral_links_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       business_requests: {
         Row: {
@@ -93,9 +111,12 @@ export interface Database {
           title: string;
           description: string | null;
           valor_proposto: number | null;
+          prazo_dias: number | null;
           created_at: string;
-          orcamento_at: string | null;
-          fechado_at: string | null;
+          pendente_aprovacao_at: string | null;
+          aprovado_at: string | null;
+          concluido_at: string | null;
+          avaliado_at: string | null;
         };
         Insert: {
           id?: string;
@@ -106,8 +127,11 @@ export interface Database {
           title: string;
           description?: string | null;
           valor_proposto?: number | null;
-          orcamento_at?: string | null;
-          fechado_at?: string | null;
+          prazo_dias?: number | null;
+          pendente_aprovacao_at?: string | null;
+          aprovado_at?: string | null;
+          concluido_at?: string | null;
+          avaliado_at?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["business_requests"]["Insert"]>;
         Relationships: [];
@@ -157,7 +181,7 @@ export interface Database {
       ratings: {
         Row: {
           id: string;
-          business_request_id: string;
+          business_request_id: string | null;
           architect_id: string;
           supplier_id: string;
           stars: number;
@@ -168,7 +192,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          business_request_id: string;
+          business_request_id?: string | null;
           architect_id: string;
           supplier_id: string;
           stars: number;
@@ -177,6 +201,20 @@ export interface Database {
           reviewed_by?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["ratings"]["Insert"]>;
+        Relationships: [];
+      };
+      app_settings: {
+        Row: {
+          id: string;
+          commission_percent: number;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          commission_percent?: number;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["app_settings"]["Insert"]>;
         Relationships: [];
       };
     };

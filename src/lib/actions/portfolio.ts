@@ -52,6 +52,42 @@ export async function addPortfolioItem(formData: FormData) {
   redirect("/app/perfil");
 }
 
+export async function updateAvatar(formData: FormData) {
+  const session = await getSessionProfile();
+  if (!session) redirect("/login");
+  const { supabase, user } = session;
+
+  const file = formData.get("avatar");
+  if (!(file instanceof File) || file.size === 0) redirect("/app/perfil");
+
+  if (file.size > MAX_FILE_BYTES) {
+    redirect(`/app/perfil?error=${encodeURIComponent("A foto passa de 5 MB")}`);
+  }
+
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("avatars")
+    .upload(path, file, { contentType: file.type });
+
+  if (uploadError) {
+    redirect(`/app/perfil?error=${encodeURIComponent(uploadError.message)}`);
+  }
+
+  const { data: publicUrl } = supabase.storage.from("avatars").getPublicUrl(path);
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ avatar_url: publicUrl.publicUrl })
+    .eq("id", user.id);
+
+  if (error) redirect(`/app/perfil?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/app/perfil");
+  redirect("/app/perfil");
+}
+
 export async function deletePortfolioItem(formData: FormData) {
   const session = await getSessionProfile();
   if (!session) redirect("/login");

@@ -1,6 +1,5 @@
 "use server";
 
-import crypto from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessionProfile } from "@/lib/auth";
@@ -78,17 +77,12 @@ export async function toggleCategory(formData: FormData) {
   revalidatePath("/admin/categorias");
 }
 
-export async function createReferralLink() {
+export async function updateCommissionPercent(formData: FormData) {
   const session = await requireAdmin();
-  const token = crypto.randomBytes(6).toString("hex");
-  await session.supabase.from("referral_links").insert({ token, created_by: session.user.id });
-  revalidatePath("/admin/indicacoes");
-}
-
-export async function toggleReferralLink(formData: FormData) {
-  const session = await requireAdmin();
-  const id = String(formData.get("id"));
-  const active = formData.get("active") === "true";
-  await session.supabase.from("referral_links").update({ active: !active }).eq("id", id);
-  revalidatePath("/admin/indicacoes");
+  const percent = Number(formData.get("commission_percent"));
+  await session.supabase
+    .from("app_settings")
+    .update({ commission_percent: percent, updated_at: new Date().toISOString() })
+    .eq("id", "default");
+  revalidatePath("/admin/configuracoes");
 }

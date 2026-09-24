@@ -14,9 +14,17 @@ export default async function AprovacoesPage() {
 
   const { data: pending } = await session.supabase
     .from("profiles")
-    .select("id, name, phone, role, created_at")
+    .select("id, name, phone, role, created_at, referred_by")
     .eq("status", "pending_review")
     .order("created_at", { ascending: true });
+
+  const referrerIds = Array.from(
+    new Set((pending ?? []).map((p) => p.referred_by).filter((id): id is string => Boolean(id)))
+  );
+  const { data: referrers } = referrerIds.length
+    ? await session.supabase.from("profiles").select("id, name").in("id", referrerIds)
+    : { data: [] };
+  const referrerMap = new Map((referrers ?? []).map((r) => [r.id, r.name]));
 
   return (
     <div>
@@ -32,6 +40,11 @@ export default async function AprovacoesPage() {
                 <Badge>{roleLabel[p.role]}</Badge>
               </div>
               <div className="text-xs text-muted mt-0.5">{p.phone}</div>
+              {p.referred_by && (
+                <div className="text-xs text-[#d4b896] mt-0.5">
+                  Indicado por {referrerMap.get(p.referred_by) ?? "—"}
+                </div>
+              )}
             </div>
             <div className="flex gap-2">
               <form action={approveProfile}>
