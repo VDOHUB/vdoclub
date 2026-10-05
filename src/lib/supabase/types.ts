@@ -203,20 +203,6 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["ratings"]["Insert"]>;
         Relationships: [];
       };
-      app_settings: {
-        Row: {
-          id: string;
-          commission_percent: number;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          commission_percent?: number;
-          updated_at?: string;
-        };
-        Update: Partial<Database["public"]["Tables"]["app_settings"]["Insert"]>;
-        Relationships: [];
-      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

@@ -15,7 +15,9 @@ export async function createArchitectReferral(formData: FormData) {
   const phone = String(formData.get("invited_phone") ?? "").trim();
   const activity = String(formData.get("invited_activity") ?? "").trim();
 
-  if (!name) redirect(`/app/perfil?error=${encodeURIComponent("Informe o nome do fornecedor")}`);
+  if (!name) {
+    redirect(`/app/fornecedores?error=${encodeURIComponent("Informe o nome do fornecedor")}`);
+  }
 
   const token = crypto.randomBytes(6).toString("hex");
 
@@ -27,8 +29,8 @@ export async function createArchitectReferral(formData: FormData) {
     invited_activity: activity || null,
   });
 
-  if (error) redirect(`/app/perfil?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/app/fornecedores?error=${encodeURIComponent(error.message)}`);
 
-  revalidatePath("/app/perfil");
-  redirect("/app/perfil");
+  revalidatePath("/app/fornecedores");
+  redirect("/app/fornecedores");
 }

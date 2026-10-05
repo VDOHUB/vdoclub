@@ -77,12 +77,3 @@ export async function toggleCategory(formData: FormData) {
   revalidatePath("/admin/categorias");
 }
 
-export async function updateCommissionPercent(formData: FormData) {
-  const session = await requireAdmin();
-  const percent = Number(formData.get("commission_percent"));
-  await session.supabase
-    .from("app_settings")
-    .update({ commission_percent: percent, updated_at: new Date().toISOString() })
-    .eq("id", "default");
-  revalidatePath("/admin/configuracoes");
-}

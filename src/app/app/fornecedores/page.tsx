@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getSessionProfile } from "@/lib/auth";
-import { Avatar, Badge, Card, ErrorNote, Stars } from "@/components/ui";
+import { Avatar, Badge, Card, ErrorNote, Input, Label, Stars } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
+import { createArchitectReferral } from "@/lib/actions/referrals";
 
 export default async function FornecedoresPage({
   searchParams,
@@ -10,7 +12,7 @@ export default async function FornecedoresPage({
   const { category, error } = await searchParams;
   const session = await getSessionProfile();
   if (!session) return null;
-  const { supabase } = session;
+  const { supabase, profile, user } = session;
 
   const { data: categories } = await supabase
     .from("categories")
@@ -51,6 +53,17 @@ export default async function FornecedoresPage({
     ratingsBySupplier.set(r.supplier_id, list);
   });
 
+  const { data: myReferrals } =
+    profile.role === "architect"
+      ? await supabase
+          .from("referral_links")
+          .select("id, token, invited_name, invited_activity, uses_count")
+          .eq("created_by", user.id)
+          .order("created_at", { ascending: false })
+      : { data: [] };
+
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
   let visibleSuppliers = suppliers ?? [];
   if (category) {
     visibleSuppliers = visibleSuppliers.filter((s) =>
@@ -66,6 +79,57 @@ export default async function FornecedoresPage({
       </div>
 
       <ErrorNote message={error} />
+
+      {profile.role === "architect" && (
+        <details className="mb-8" open={(myReferrals ?? []).length > 0}>
+          <summary className="cursor-pointer list-none inline-flex items-center gap-2 text-sm font-semibold text-[#d4b896] hover:underline">
+            <span className="text-base leading-none">+</span> Indicar fornecedor
+          </summary>
+
+          <Card className="mt-4">
+            <p className="text-xs text-muted mb-4">
+              Preencha os dados do fornecedor que você quer indicar. Vamos gerar um link — ele
+              ainda passa pela aprovação do time VDO, mas já fica marcado como indicado por você.
+            </p>
+            <form action={createArchitectReferral} className="space-y-3">
+              <div>
+                <Label>Nome</Label>
+                <Input type="text" name="invited_name" required />
+              </div>
+              <div>
+                <Label>Telefone</Label>
+                <Input type="tel" name="invited_phone" placeholder="(00) 00000-0000" />
+              </div>
+              <div>
+                <Label>Atividade</Label>
+                <Input type="text" name="invited_activity" placeholder="Ex: Marcenaria sob medida" />
+              </div>
+              <SubmitButton pendingText="Gerando link...">Gerar link de indicação</SubmitButton>
+            </form>
+          </Card>
+
+          <div className="space-y-2 mt-3">
+            {(myReferrals ?? []).map((r) => (
+              <Card key={r.id} className="py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">{r.invited_name}</div>
+                    {r.invited_activity && (
+                      <div className="text-xs text-muted">{r.invited_activity}</div>
+                    )}
+                  </div>
+                  <Badge tone={r.uses_count > 0 ? "green" : "wood"}>
+                    {r.uses_count > 0 ? "Cadastrado" : "Aguardando"}
+                  </Badge>
+                </div>
+                <div className="text-xs text-cream/70 font-mono mt-2 break-all">
+                  {`${site}/cadastro?ref=${r.token}`}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </details>
+      )}
 
       <div className="flex flex-wrap gap-2 mb-8">
         <a

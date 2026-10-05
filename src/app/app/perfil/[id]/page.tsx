@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import { getSessionProfile } from "@/lib/auth";
+import Link from "next/link";
 import { createBusinessRequest, submitRating } from "@/lib/actions/crm";
 import {
   Avatar,
   Badge,
-  Button,
   Card,
   ErrorNote,
   Input,
@@ -13,6 +13,7 @@ import {
   StarPicker,
   Stars,
 } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 
 const roleLabel: Record<string, string> = {
   architect: "Arquiteto",
@@ -71,6 +72,17 @@ export default async function PerfilPublicoPage({
   const canRequest = viewer.role === "architect" && isSupplier && (supplierCategories ?? []).length > 0;
   const canRate = viewer.role === "architect" && isSupplier && target.id !== user.id;
 
+  const { data: openRequest } = canRequest
+    ? await supabase
+        .from("business_requests")
+        .select("id, title")
+        .eq("architect_id", user.id)
+        .eq("supplier_id", target.id)
+        .in("status", ["orcado", "pendente_aprovacao", "aprovado"])
+        .limit(1)
+        .maybeSingle()
+    : { data: null };
+
   const { data: existingDirectRating } = canRate
     ? await supabase
         .from("ratings")
@@ -114,7 +126,23 @@ export default async function PerfilPublicoPage({
 
       <ErrorNote message={error} />
 
-      {canRequest && <NovoOrcamentoForm supplierId={target.id} categories={supplierCategories ?? []} />}
+      {canRequest &&
+        (openRequest ? (
+          <Card className="mb-4">
+            <h2 className="text-sm font-semibold text-white mb-1">Orçamento em andamento</h2>
+            <p className="text-xs text-muted mb-3">
+              Você já tem um orçamento aberto com este fornecedor. Conclua-o para abrir outro.
+            </p>
+            <Link
+              href={`/app/orcamentos/${openRequest.id}`}
+              className="text-sm text-[#d4b896] font-medium hover:underline"
+            >
+              Ver &quot;{openRequest.title}&quot; →
+            </Link>
+          </Card>
+        ) : (
+          <NovoOrcamentoForm supplierId={target.id} categories={supplierCategories ?? []} />
+        ))}
 
       {canRate && (
         <Card className="mb-4">
@@ -156,10 +184,10 @@ export default async function PerfilPublicoPage({
                 <textarea
                   name="comment"
                   rows={3}
-                  className="w-full bg-wood/10 border border-wood/25 rounded-lg px-3.5 py-2.5 text-sm text-cream placeholder:text-muted focus:outline-none focus:border-cream/40"
+                  className="w-full bg-white border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-wood-light"
                 />
               </div>
-              <Button type="submit">Enviar avaliação</Button>
+              <SubmitButton>Enviar avaliação</SubmitButton>
             </form>
           )}
         </Card>
@@ -245,7 +273,7 @@ function NovoOrcamentoForm({
             className="w-full text-xs text-muted file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border file:border-wood/25 file:bg-wood/10 file:text-cream file:text-xs"
           />
         </div>
-        <Button type="submit">Enviar solicitação</Button>
+        <SubmitButton pendingText="Enviando solicitação...">Enviar solicitação</SubmitButton>
       </form>
     </Card>
   );

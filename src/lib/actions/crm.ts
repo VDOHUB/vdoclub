@@ -27,6 +27,21 @@ export async function createBusinessRequest(formData: FormData) {
     }
   }
 
+  const findOpenRequest = async () => {
+    const { data } = await supabase
+      .from("business_requests")
+      .select("id")
+      .eq("architect_id", user.id)
+      .eq("supplier_id", supplierId)
+      .in("status", ["orcado", "pendente_aprovacao", "aprovado"])
+      .limit(1)
+      .maybeSingle();
+    return data;
+  };
+
+  const existing = await findOpenRequest();
+  if (existing) redirect(`/app/orcamentos/${existing.id}`);
+
   const { data: request, error } = await supabase
     .from("business_requests")
     .insert({
@@ -40,6 +55,10 @@ export async function createBusinessRequest(formData: FormData) {
     .single();
 
   if (error || !request) {
+    // Requisição simultânea que passou da checagem acima: a trava do banco
+    // barrou, então levamos o usuário ao orçamento que já foi criado.
+    const raced = await findOpenRequest();
+    if (raced) redirect(`/app/orcamentos/${raced.id}`);
     redirect(`${backTo}?error=${encodeURIComponent(error?.message ?? "Erro ao criar orçamento")}`);
   }
 

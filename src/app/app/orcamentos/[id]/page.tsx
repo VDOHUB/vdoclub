@@ -4,7 +4,6 @@ import { getSessionProfile } from "@/lib/auth";
 import { approveOrcamento, marcarConcluido, submitOrcamento, submitRating } from "@/lib/actions/crm";
 import {
   Badge,
-  Button,
   Card,
   ErrorNote,
   Input,
@@ -13,6 +12,7 @@ import {
   StatusStepper,
   Stars,
 } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 
 export default async function OrcamentoDetalhePage({
   params,
@@ -58,12 +58,6 @@ export default async function OrcamentoDetalhePage({
     .select("*")
     .eq("business_request_id", id)
     .maybeSingle();
-  const { data: settings } = await supabase
-    .from("app_settings")
-    .select("commission_percent")
-    .eq("id", "default")
-    .single();
-
   const { data: attachments } = await supabase
     .from("business_request_attachments")
     .select("id, storage_path, file_name")
@@ -80,10 +74,6 @@ export default async function OrcamentoDetalhePage({
 
   const isSupplier = profile.role === "supplier" && req.supplier_id === user.id;
   const isArchitect = profile.role === "architect" && req.architect_id === user.id;
-  const commissionPercent = settings?.commission_percent ?? 0;
-  const commissionValue = req.valor_proposto
-    ? (Number(req.valor_proposto) * commissionPercent) / 100
-    : null;
 
   return (
     <div className="max-w-xl">
@@ -123,14 +113,6 @@ export default async function OrcamentoDetalhePage({
             <dd className="text-[#d4b896] font-bold">
               {req.valor_proposto
                 ? `R$ ${Number(req.valor_proposto).toLocaleString("pt-BR")}`
-                : "—"}
-            </dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-muted">Comissão VDO ({commissionPercent}%)</dt>
-            <dd className="text-cream/80">
-              {commissionValue !== null
-                ? `R$ ${commissionValue.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}`
                 : "—"}
             </dd>
           </div>
@@ -180,7 +162,7 @@ export default async function OrcamentoDetalhePage({
                 <Input type="number" name="prazo_dias" min="1" />
               </div>
             </div>
-            <Button type="submit">Enviar orçamento</Button>
+            <SubmitButton>Enviar orçamento</SubmitButton>
           </form>
         </Card>
       )}
@@ -194,7 +176,7 @@ export default async function OrcamentoDetalhePage({
           </p>
           <form action={approveOrcamento}>
             <input type="hidden" name="id" value={req.id} />
-            <Button type="submit">Aprovar</Button>
+            <SubmitButton pendingText="Aprovando...">Aprovar</SubmitButton>
           </form>
         </Card>
       )}
@@ -205,7 +187,7 @@ export default async function OrcamentoDetalhePage({
           <p className="text-xs text-muted mb-3">Quando o serviço combinado estiver finalizado.</p>
           <form action={marcarConcluido}>
             <input type="hidden" name="id" value={req.id} />
-            <Button type="submit">Marcar concluído</Button>
+            <SubmitButton pendingText="Salvando...">Marcar concluído</SubmitButton>
           </form>
         </Card>
       )}
@@ -226,10 +208,10 @@ export default async function OrcamentoDetalhePage({
               <textarea
                 name="comment"
                 rows={3}
-                className="w-full bg-wood/10 border border-wood/25 rounded-lg px-3.5 py-2.5 text-sm text-cream placeholder:text-muted focus:outline-none focus:border-cream/40"
+                className="w-full bg-white border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-wood-light"
               />
             </div>
-            <Button type="submit">Enviar avaliação</Button>
+            <SubmitButton>Enviar avaliação</SubmitButton>
           </form>
         </Card>
       )}

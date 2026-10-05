@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signUp } from "@/lib/actions/auth";
-import { Button, Card, ErrorNote, Input, Label } from "@/components/ui";
+import { Card, ErrorNote, Input, Label } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 
 type Category = { id: string; name: string };
 
@@ -102,9 +104,29 @@ export function CadastroForm({
           </div>
         )}
 
-        <Button type="submit" className="w-full mt-2">
+        <label className="flex items-start gap-2.5 text-xs text-cream/80 leading-relaxed cursor-pointer">
+          <input
+            type="checkbox"
+            name="accept_terms"
+            required
+            className="mt-0.5 accent-[#d4b896] flex-shrink-0"
+          />
+          <span>
+            Li e aceito os{" "}
+            <Link href="/termos" target="_blank" className="text-[#d4b896] hover:underline">
+              Termos de Uso
+            </Link>{" "}
+            e a{" "}
+            <Link href="/privacidade" target="_blank" className="text-[#d4b896] hover:underline">
+              Política de Privacidade
+            </Link>
+            .
+          </span>
+        </label>
+
+        <SubmitButton className="w-full mt-2" pendingText="Criando cadastro...">
           Criar cadastro
-        </Button>
+        </SubmitButton>
       </form>
     </Card>
   );

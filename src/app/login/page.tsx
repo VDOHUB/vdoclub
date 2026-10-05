@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signIn } from "@/lib/actions/auth";
-import { Button, Card, ErrorNote, Input, Label } from "@/components/ui";
+import { Card, ErrorNote, Input, Label } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 
 export default async function LoginPage({
   searchParams,
@@ -31,9 +32,14 @@ export default async function LoginPage({
               <Label>Senha</Label>
               <Input type="password" name="password" required autoComplete="current-password" />
             </div>
-            <Button type="submit" className="w-full">
+            <SubmitButton className="w-full" pendingText="Entrando...">
               Entrar no Club
-            </Button>
+            </SubmitButton>
+            <div className="text-center">
+              <Link href="/esqueci-senha" className="text-xs text-muted hover:text-cream hover:underline">
+                Esqueci minha senha
+              </Link>
+            </div>
           </form>
         </Card>
 
