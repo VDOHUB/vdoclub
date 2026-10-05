@@ -64,3 +64,24 @@ body {
 .star-picker label:hover ~ label {
   color: #d4b896;
 }
+
+/* ── PATROCINADORES: loop vertical infinito ── */
+@keyframes sponsor-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+.sponsor-marquee {
+  animation: sponsor-scroll var(--sponsor-duration, 24s) linear infinite;
+}
+.sponsor-marquee-wrap:hover .sponsor-marquee {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sponsor-marquee {
+    animation: none;
+  }
+}

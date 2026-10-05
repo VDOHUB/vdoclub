@@ -203,6 +203,27 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["ratings"]["Insert"]>;
         Relationships: [];
       };
+      sponsors: {
+        Row: {
+          id: string;
+          name: string;
+          logo_url: string;
+          logo_path: string | null;
+          link_url: string | null;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          logo_url: string;
+          logo_path?: string | null;
+          link_url?: string | null;
+          active?: boolean;
+        };
+        Update: Partial<Database["public"]["Tables"]["sponsors"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

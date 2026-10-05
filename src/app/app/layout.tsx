@@ -3,12 +3,19 @@ import { redirect } from "next/navigation";
 import { getSessionProfile } from "@/lib/auth";
 import { signOut } from "@/lib/actions/auth";
 import { MobileTabBar } from "@/components/mobile-tab-bar";
+import { PhoneSponsors } from "@/components/phone-sponsors";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await getSessionProfile();
   if (!session) redirect("/login");
 
-  const { profile } = session;
+  const { profile, supabase } = session;
+
+  const { data: sponsors } = await supabase
+    .from("sponsors")
+    .select("id, name, logo_url, link_url")
+    .eq("active", true)
+    .order("created_at", { ascending: true });
 
   return (
     <div className="flex-1 flex flex-col">
@@ -56,6 +63,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="max-w-5xl mx-auto px-6 py-10 w-full">{children}</div>
       </main>
+      <PhoneSponsors sponsors={sponsors ?? []} />
       <MobileTabBar isAdmin={profile.role === "admin"} />
     </div>
   );
