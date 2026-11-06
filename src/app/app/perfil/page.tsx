@@ -1,7 +1,9 @@
 import { getSessionProfile } from "@/lib/auth";
 import { addPortfolioItem, deletePortfolioItem, updateAvatar } from "@/lib/actions/portfolio";
+import Link from "next/link";
 import { Avatar, Badge, Card, ErrorNote, Input, Label } from "@/components/ui";
-import { SubmitButton } from "@/components/submit-button";
+import { UploadForm } from "@/components/upload-form";
+import { UPLOAD_LIMITS } from "@/lib/uploads";
 
 const roleLabel: Record<string, string> = {
   architect: "Arquiteto",
@@ -58,17 +60,21 @@ export default async function PerfilPage({
           <Badge>{roleLabel[profile.role]}</Badge>
         </div>
 
-        <form action={updateAvatar} encType="multipart/form-data" className="flex items-center gap-2 mb-4">
-          <input
-            type="file"
-            name="avatar"
-            accept="image/*"
-            className="flex-1 text-xs text-muted file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border file:border-wood/25 file:bg-wood/10 file:text-cream file:text-xs"
-          />
-          <SubmitButton variant="ghost" pendingText="Enviando foto...">
-            Trocar foto
-          </SubmitButton>
-        </form>
+        <UploadForm
+          action={updateAvatar}
+          bucket={UPLOAD_LIMITS.avatar.bucket}
+          pathPrefix={user.id}
+          maxBytes={UPLOAD_LIMITS.avatar.maxBytes}
+          maxFiles={1}
+          label="Foto de perfil"
+          accept="image/*"
+          required
+          compact
+          variant="primary"
+          submitLabel="Salvar foto"
+          pendingText="Salvando foto..."
+          className="mb-4"
+        />
 
         <dl className="text-sm text-cream/80 space-y-2">
           <div className="flex justify-between">
@@ -103,35 +109,37 @@ export default async function PerfilPage({
         <h2 className="text-sm font-semibold text-white mb-4">Meus projetos</h2>
 
         <Card className="mb-4">
-          <form action={addPortfolioItem} className="space-y-3" encType="multipart/form-data">
-            <div>
-              <Label>Título</Label>
-              <Input type="text" name="title" required placeholder="Ex: Reforma apartamento Setor Bueno" />
+          <UploadForm
+            action={addPortfolioItem}
+            bucket={UPLOAD_LIMITS.portfolio.bucket}
+            pathPrefix={user.id}
+            maxBytes={UPLOAD_LIMITS.portfolio.maxBytes}
+            maxFiles={UPLOAD_LIMITS.portfolio.maxFiles}
+            label="Fotos (até 20 MB cada)"
+            accept="image/*"
+            submitLabel="Adicionar projeto"
+            pendingText="Salvando projeto..."
+            className="space-y-3"
+          >
+            <div className="space-y-3 mb-3">
+              <div>
+                <Label>Título</Label>
+                <Input type="text" name="title" required placeholder="Ex: Reforma apartamento Setor Bueno" />
+              </div>
+              <div>
+                <Label>Descrição</Label>
+                <textarea
+                  name="description"
+                  rows={3}
+                  className="w-full bg-wood/10 border border-wood/25 rounded-lg px-3.5 py-2.5 text-sm text-cream placeholder:text-muted focus:outline-none focus:border-cream/40"
+                />
+              </div>
+              <div>
+                <Label>Link (opcional)</Label>
+                <Input type="text" inputMode="url" name="link_url" placeholder="instagram.com/seuperfil" />
+              </div>
             </div>
-            <div>
-              <Label>Descrição</Label>
-              <textarea
-                name="description"
-                rows={3}
-                className="w-full bg-wood/10 border border-wood/25 rounded-lg px-3.5 py-2.5 text-sm text-cream placeholder:text-muted focus:outline-none focus:border-cream/40"
-              />
-            </div>
-            <div>
-              <Label>Link (opcional)</Label>
-              <Input type="url" name="link_url" placeholder="https://..." />
-            </div>
-            <div>
-              <Label>Fotos (até 5 MB cada)</Label>
-              <input
-                type="file"
-                name="photos"
-                multiple
-                accept="image/*"
-                className="w-full text-xs text-muted file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border file:border-wood/25 file:bg-wood/10 file:text-cream file:text-xs"
-              />
-            </div>
-            <SubmitButton pendingText="Enviando projeto...">Adicionar projeto</SubmitButton>
-          </form>
+          </UploadForm>
         </Card>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -172,6 +180,16 @@ export default async function PerfilPage({
         </div>
       </div>
 
+
+      <p className="text-center text-[11px] text-muted mt-10">
+        <Link href="/termos" className="hover:text-cream hover:underline">
+          Termos de Uso
+        </Link>
+        {" · "}
+        <Link href="/privacidade" className="hover:text-cream hover:underline">
+          Política de Privacidade
+        </Link>
+      </p>
     </div>
   );
 }

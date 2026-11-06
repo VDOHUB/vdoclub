@@ -49,6 +49,15 @@ export default async function LoginPage({
             Faça seu cadastro
           </Link>
         </p>
+        <p className="text-center text-[11px] text-muted mt-4">
+          <Link href="/termos" className="hover:text-cream hover:underline">
+            Termos de Uso
+          </Link>
+          {" · "}
+          <Link href="/privacidade" className="hover:text-cream hover:underline">
+            Política de Privacidade
+          </Link>
+        </p>
       </div>
     </div>
   );

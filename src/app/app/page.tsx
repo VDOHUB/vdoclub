@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSessionProfile } from "@/lib/auth";
 import { Badge, Card } from "@/components/ui";
 import { statusLabel, statusTone } from "@/lib/status";
+import { SponsorsStrip } from "@/components/sponsors-strip";
 
 export default async function HomePage() {
   const session = await getSessionProfile();
@@ -16,6 +17,12 @@ export default async function HomePage() {
     .eq(filterColumn, user.id)
     .order("created_at", { ascending: false })
     .limit(3);
+
+  const { data: sponsors } = await supabase
+    .from("sponsors")
+    .select("id, name, logo_url, link_url")
+    .eq("active", true)
+    .order("created_at", { ascending: true });
 
   const pendingCount = (requests ?? []).filter((r) => r.status !== "concluido" && r.status !== "avaliado").length;
 
@@ -57,6 +64,8 @@ export default async function HomePage() {
           <p className="text-sm text-muted">Nenhuma atividade ainda.</p>
         )}
       </div>
+
+      <SponsorsStrip sponsors={sponsors ?? []} />
     </div>
   );
 }

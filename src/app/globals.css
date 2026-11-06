@@ -85,3 +85,24 @@ body {
     animation: none;
   }
 }
+
+/* ── PATROCINADORES: faixa horizontal (celular/notebook) ── */
+@keyframes sponsor-scroll-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.sponsor-marquee-x {
+  animation: sponsor-scroll-x var(--sponsor-duration, 24s) linear infinite;
+}
+.sponsor-marquee-wrap:hover .sponsor-marquee-x {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sponsor-marquee-x {
+    animation: none;
+  }
+}

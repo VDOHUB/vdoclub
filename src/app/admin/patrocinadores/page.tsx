@@ -1,7 +1,8 @@
 import { getSessionProfile } from "@/lib/auth";
 import { addSponsor, deleteSponsor, toggleSponsor } from "@/lib/actions/sponsors";
 import { Badge, Button, Card, ErrorNote, Input, Label } from "@/components/ui";
-import { SubmitButton } from "@/components/submit-button";
+import { UploadForm } from "@/components/upload-form";
+import { UPLOAD_LIMITS } from "@/lib/uploads";
 
 export default async function PatrocinadoresPage({
   searchParams,
@@ -21,33 +22,36 @@ export default async function PatrocinadoresPage({
     <div className="max-w-2xl">
       <h1 className="font-serif text-2xl text-white mb-1">Patrocinadores</h1>
       <p className="text-sm text-muted mb-6">
-        Os logos ativos passam em loop no celular exibido nas telas do app (em telas largas).
+        Os logos ativos passam em loop no celular exibido nas telas largas e em uma faixa na Home
+        (celular e notebook). Aceita PNG, JPG, WEBP e SVG.
       </p>
 
       <ErrorNote message={error} />
 
       <Card className="mb-6">
-        <form action={addSponsor} className="space-y-3" encType="multipart/form-data">
-          <div>
-            <Label>Nome</Label>
-            <Input type="text" name="name" required placeholder="Ex: Marcenaria Nobre" />
+        <UploadForm
+          action={addSponsor}
+          bucket={UPLOAD_LIMITS.sponsor.bucket}
+          pathPrefix="logos"
+          maxBytes={UPLOAD_LIMITS.sponsor.maxBytes}
+          maxFiles={1}
+          label="Logo (imagem até 5 MB)"
+          accept="image/*"
+          required
+          submitLabel="Adicionar patrocinador"
+          pendingText="Salvando patrocinador..."
+        >
+          <div className="space-y-3 mb-3">
+            <div>
+              <Label>Nome</Label>
+              <Input type="text" name="name" required placeholder="Ex: Marcenaria Nobre" />
+            </div>
+            <div>
+              <Label>Link (opcional)</Label>
+              <Input type="text" inputMode="url" name="link_url" placeholder="site.com.br ou instagram.com/empresa" />
+            </div>
           </div>
-          <div>
-            <Label>Link (opcional)</Label>
-            <Input type="url" name="link_url" placeholder="https://..." />
-          </div>
-          <div>
-            <Label>Logo (imagem até 5 MB)</Label>
-            <input
-              type="file"
-              name="logo"
-              accept="image/*"
-              required
-              className="w-full text-xs text-muted file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border file:border-wood/25 file:bg-wood/10 file:text-cream file:text-xs"
-            />
-          </div>
-          <SubmitButton pendingText="Enviando logo...">Adicionar patrocinador</SubmitButton>
-        </form>
+        </UploadForm>
       </Card>
 
       <div className="space-y-2">

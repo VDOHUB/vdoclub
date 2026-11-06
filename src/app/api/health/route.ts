@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { ensureSupabaseActive } from "@/lib/supabase-guard";
 
 export const dynamic = "force-dynamic";
 
-// Checagem pública e somente-leitura. Chamada de tempos em tempos por um agendador
-// externo: mantém o Supabase ativo e falha (HTTP 503) se o banco estiver fora do ar.
+// Checagem pública. Chamada de tempos em tempos por um monitor externo (ex.: UptimeRobot a cada
+// 5 min): mantém o Supabase ativo e, se o banco estiver pausado, já pede a reativação.
 export async function GET() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,7 +15,8 @@ export async function GET() {
   const { error } = await supabase.from("categories").select("id").limit(1);
 
   if (error) {
-    return NextResponse.json({ ok: false }, { status: 503 });
+    const guard = await ensureSupabaseActive();
+    return NextResponse.json({ ok: false, supabase: guard.status, action: guard.action }, { status: 503 });
   }
 
   return NextResponse.json({ ok: true });

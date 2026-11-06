@@ -1,11 +1,9 @@
 "use server";
 
-import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessionProfile } from "@/lib/auth";
-
-const MAX_FILE_BYTES = 5 * 1024 * 1024;
+import { UPLOAD_LIMITS, UploadError, parseUploaded, type UploadedFile } from "@/lib/uploads";
 
 export async function createBusinessRequest(formData: FormData) {
   const session = await getSessionProfile();
@@ -16,15 +14,29 @@ export async function createBusinessRequest(formData: FormData) {
   const categoryId = String(formData.get("category_id"));
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const files = formData.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
   const backTo = String(formData.get("back_to") ?? "/app/fornecedores");
 
-  if (!title) redirect(`${backTo}?error=${encodeURIComponent("Informe um título")}`);
+  let files: UploadedFile[] = [];
+  try {
+    files = parseUploaded(formData, {
+      prefix: `${user.id}/`,
+      maxBytes: UPLOAD_LIMITS.attachments.maxBytes,
+      maxFiles: UPLOAD_LIMITS.attachments.maxFiles,
+    });
+  } catch (e) {
+    redirect(`${backTo}?error=${encodeURIComponent(e instanceof UploadError ? e.message : "Arquivos inválidos.")}`);
+  }
 
-  for (const file of files) {
-    if (file.size > MAX_FILE_BYTES) {
-      redirect(`${backTo}?error=${encodeURIComponent(`"${file.name}" passa de 5 MB`)}`);
+  // Os arquivos já foram enviados direto ao Storage; se algo falhar aqui, descartamos.
+  const discardFiles = async () => {
+    if (files.length > 0) {
+      await supabase.storage.from(UPLOAD_LIMITS.attachments.bucket).remove(files.map((f) => f.path));
     }
+  };
+
+  if (!title) {
+    await discardFiles();
+    redirect(`${backTo}?error=${encodeURIComponent("Informe um título")}`);
   }
 
   const findOpenRequest = async () => {
@@ -40,7 +52,10 @@ export async function createBusinessRequest(formData: FormData) {
   };
 
   const existing = await findOpenRequest();
-  if (existing) redirect(`/app/orcamentos/${existing.id}`);
+  if (existing) {
+    await discardFiles();
+    redirect(`/app/orcamentos/${existing.id}`);
+  }
 
   const { data: request, error } = await supabase
     .from("business_requests")
@@ -55,6 +70,7 @@ export async function createBusinessRequest(formData: FormData) {
     .single();
 
   if (error || !request) {
+    await discardFiles();
     // Requisição simultânea que passou da checagem acima: a trava do banco
     // barrou, então levamos o usuário ao orçamento que já foi criado.
     const raced = await findOpenRequest();
@@ -62,21 +78,16 @@ export async function createBusinessRequest(formData: FormData) {
     redirect(`${backTo}?error=${encodeURIComponent(error?.message ?? "Erro ao criar orçamento")}`);
   }
 
-  for (const file of files) {
-    const ext = file.name.split(".").pop() ?? "bin";
-    const path = `${request.id}/${randomUUID()}.${ext}`;
-    const { error: uploadError } = await supabase.storage
-      .from("orcamento-anexos")
-      .upload(path, file, { contentType: file.type });
-    if (!uploadError) {
-      await supabase.from("business_request_attachments").insert({
+  if (files.length > 0) {
+    await supabase.from("business_request_attachments").insert(
+      files.map((f) => ({
         business_request_id: request.id,
-        storage_path: path,
-        file_name: file.name,
-        mime_type: file.type,
-        size_bytes: file.size,
-      });
-    }
+        storage_path: f.path,
+        file_name: f.name,
+        mime_type: f.type || null,
+        size_bytes: f.size,
+      }))
+    );
   }
 
   revalidatePath("/app/orcamentos");

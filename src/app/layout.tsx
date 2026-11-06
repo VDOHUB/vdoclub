@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
@@ -18,6 +18,11 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "VDO CLUB",
   description: "A ponte entre arquitetos e fornecedores",
+  appleWebApp: { capable: true, title: "VDO CLUB", statusBarStyle: "black" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1a0e05",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

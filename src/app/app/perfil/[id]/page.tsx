@@ -14,6 +14,8 @@ import {
   Stars,
 } from "@/components/ui";
 import { SubmitButton } from "@/components/submit-button";
+import { UploadForm } from "@/components/upload-form";
+import { UPLOAD_LIMITS } from "@/lib/uploads";
 
 const roleLabel: Record<string, string> = {
   architect: "Arquiteto",
@@ -141,7 +143,7 @@ export default async function PerfilPublicoPage({
             </Link>
           </Card>
         ) : (
-          <NovoOrcamentoForm supplierId={target.id} categories={supplierCategories ?? []} />
+          <NovoOrcamentoForm userId={user.id} supplierId={target.id} categories={supplierCategories ?? []} />
         ))}
 
       {canRate && (
@@ -228,53 +230,57 @@ export default async function PerfilPublicoPage({
 }
 
 function NovoOrcamentoForm({
+  userId,
   supplierId,
   categories,
 }: {
+  userId: string;
   supplierId: string;
   categories: { category_id: string; categories: { id: string; name: string } | null }[];
 }) {
   return (
     <Card className="mb-4">
       <h2 className="text-sm font-semibold text-white mb-3">+ Novo orçamento</h2>
-      <form action={createBusinessRequest} className="space-y-3" encType="multipart/form-data">
+      <UploadForm
+        action={createBusinessRequest}
+        bucket={UPLOAD_LIMITS.attachments.bucket}
+        pathPrefix={userId}
+        maxBytes={UPLOAD_LIMITS.attachments.maxBytes}
+        maxFiles={UPLOAD_LIMITS.attachments.maxFiles}
+        label="Fotos ou arquivos (até 20 MB cada)"
+        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.dwg"
+        submitLabel="Enviar solicitação"
+        pendingText="Criando orçamento..."
+        className="space-y-3"
+      >
         <input type="hidden" name="supplier_id" value={supplierId} />
         <input type="hidden" name="back_to" value={`/app/perfil/${supplierId}`} />
-        <div>
-          <Label>Categoria</Label>
-          <Select name="category_id" required>
-            {categories.map((c) => (
-              <option key={c.category_id} value={c.category_id}>
-                {c.categories?.name}
-              </option>
-            ))}
-          </Select>
+        <div className="space-y-3 mb-3">
+          <div>
+            <Label>Categoria</Label>
+            <Select name="category_id" required>
+              {categories.map((c) => (
+                <option key={c.category_id} value={c.category_id}>
+                  {c.categories?.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Label>Título</Label>
+            <Input type="text" name="title" required placeholder="Ex: Marcenaria planejada para sala" />
+          </div>
+          <div>
+            <Label>Descrição</Label>
+            <textarea
+              name="description"
+              rows={3}
+              placeholder="Detalhe o que você precisa"
+              className="w-full bg-wood/10 border border-wood/25 rounded-lg px-3.5 py-2.5 text-sm text-cream placeholder:text-muted focus:outline-none focus:border-cream/40"
+            />
+          </div>
         </div>
-        <div>
-          <Label>Título</Label>
-          <Input type="text" name="title" required placeholder="Ex: Marcenaria planejada para sala" />
-        </div>
-        <div>
-          <Label>Descrição</Label>
-          <textarea
-            name="description"
-            rows={3}
-            placeholder="Detalhe o que você precisa"
-            className="w-full bg-wood/10 border border-wood/25 rounded-lg px-3.5 py-2.5 text-sm text-cream placeholder:text-muted focus:outline-none focus:border-cream/40"
-          />
-        </div>
-        <div>
-          <Label>Fotos ou arquivos (até 5 MB cada)</Label>
-          <input
-            type="file"
-            name="files"
-            multiple
-            accept="image/*,.pdf,.doc,.docx"
-            className="w-full text-xs text-muted file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border file:border-wood/25 file:bg-wood/10 file:text-cream file:text-xs"
-          />
-        </div>
-        <SubmitButton pendingText="Enviando solicitação...">Enviar solicitação</SubmitButton>
-      </form>
+      </UploadForm>
     </Card>
   );
 }
