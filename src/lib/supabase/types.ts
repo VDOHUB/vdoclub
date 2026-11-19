@@ -227,6 +227,7 @@ export interface Database {
           logo_path: string | null;
           link_url: string | null;
           active: boolean;
+          bg_color: string;
           created_at: string;
         };
         Insert: {
@@ -236,13 +237,29 @@ export interface Database {
           logo_path?: string | null;
           link_url?: string | null;
           active?: boolean;
+          bg_color?: string;
         };
         Update: Partial<Database["public"]["Tables"]["sponsors"]["Insert"]>;
         Relationships: [];
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      admin_list_users: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          name: string;
+          email: string;
+          phone: string;
+          role: ProfileRole;
+          status: ProfileStatus;
+          avatar_url: string | null;
+          created_at: string;
+          last_sign_in_at: string | null;
+        }[];
+      };
+    };
     Enums: {
       profile_role: ProfileRole;
       profile_status: ProfileStatus;

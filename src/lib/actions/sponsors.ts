@@ -28,6 +28,8 @@ export async function addSponsor(formData: FormData) {
 
   const name = String(formData.get("name") ?? "").trim();
   const linkRaw = String(formData.get("link_url") ?? "");
+  const bgRaw = String(formData.get("bg_color") ?? "");
+  const bgColor = /^#[0-9a-fA-F]{6}$/.test(bgRaw) ? bgRaw.toLowerCase() : "#fffaf3";
 
   let files: UploadedFile[] = [];
   try {
@@ -66,6 +68,7 @@ export async function addSponsor(formData: FormData) {
     logo_url: publicUrl.publicUrl,
     logo_path: files[0].path,
     link_url: linkUrl,
+    bg_color: bgColor,
   });
 
   if (error) {

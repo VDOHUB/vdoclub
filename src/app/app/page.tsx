@@ -20,7 +20,7 @@ export default async function HomePage() {
 
   const { data: sponsors } = await supabase
     .from("sponsors")
-    .select("id, name, logo_url, link_url")
+    .select("id, name, logo_url, link_url, bg_color")
     .eq("active", true)
     .order("created_at", { ascending: true });
 

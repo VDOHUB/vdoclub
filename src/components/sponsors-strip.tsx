@@ -1,8 +1,11 @@
-type Sponsor = { id: string; name: string; logo_url: string; link_url: string | null };
+type Sponsor = { id: string; name: string; logo_url: string; link_url: string | null; bg_color: string };
 
 function Item({ sponsor }: { sponsor: Sponsor }) {
   const card = (
-    <div className="bg-[#fffaf3] rounded-xl h-14 w-32 flex items-center justify-center p-2.5">
+    <div
+      className="rounded-xl h-20 w-44 flex items-center justify-center px-3.5 py-2.5 ring-1 ring-black/10"
+      style={{ backgroundColor: sponsor.bg_color }}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={sponsor.logo_url}

@@ -23,6 +23,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <Link href="/admin/avaliacoes" className="hover:text-cream transition-colors">
                 Avaliações
               </Link>
+              <Link href="/admin/usuarios" className="hover:text-cream transition-colors">
+                Usuários
+              </Link>
               <Link href="/admin/categorias" className="hover:text-cream transition-colors">
                 Categorias
               </Link>
@@ -47,6 +50,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </Link>
           <Link href="/admin/avaliacoes" className="whitespace-nowrap hover:text-cream transition-colors">
             Avaliações
+          </Link>
+          <Link href="/admin/usuarios" className="whitespace-nowrap hover:text-cream transition-colors">
+            Usuários
           </Link>
           <Link href="/admin/categorias" className="whitespace-nowrap hover:text-cream transition-colors">
             Categorias

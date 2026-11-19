@@ -24,6 +24,9 @@ type Props = {
   compact?: boolean;
   className?: string;
   children?: React.ReactNode;
+  // Pré-processa cada arquivo antes do envio (ex.: cortar margens de um logo) e pode
+  // devolver campos extras para o formulário.
+  processFile?: (file: File) => Promise<{ file: File; fields?: Record<string, string> }>;
 };
 
 export function UploadForm({
@@ -41,6 +44,7 @@ export function UploadForm({
   compact = false,
   className = "",
   children,
+  processFile,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -96,7 +100,12 @@ export function UploadForm({
         setPhase("uploading");
         setProgress(files.map(() => 0));
         for (let i = 0; i < files.length; i++) {
-          const file = files[i];
+          let file = files[i];
+          if (processFile) {
+            const processed = await processFile(file);
+            file = processed.file;
+            for (const [key, value] of Object.entries(processed.fields ?? {})) formData.set(key, value);
+          }
           const path = `${pathPrefix}/${crypto.randomUUID()}-${sanitizeFileName(file.name)}`;
           await uploadToBucket({
             bucket,

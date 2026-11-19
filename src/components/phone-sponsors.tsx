@@ -1,8 +1,11 @@
-type Sponsor = { id: string; name: string; logo_url: string; link_url: string | null };
+type Sponsor = { id: string; name: string; logo_url: string; link_url: string | null; bg_color: string };
 
 function Logo({ sponsor }: { sponsor: Sponsor }) {
   const card = (
-    <div className="bg-[#fffaf3] rounded-xl h-16 flex items-center justify-center p-3">
+    <div
+      className="rounded-xl h-24 flex items-center justify-center px-4 py-3 ring-1 ring-black/10"
+      style={{ backgroundColor: sponsor.bg_color }}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={sponsor.logo_url}
@@ -24,7 +27,7 @@ function Logo({ sponsor }: { sponsor: Sponsor }) {
 
 function Placeholder() {
   return (
-    <div className="rounded-xl h-16 flex items-center justify-center border border-dashed border-wood/50 text-[10px] uppercase tracking-widest text-muted">
+    <div className="rounded-xl h-24 flex items-center justify-center border border-dashed border-wood/50 text-[10px] uppercase tracking-widest text-muted">
       Seu logo aqui
     </div>
   );

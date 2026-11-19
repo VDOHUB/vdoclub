@@ -1,7 +1,7 @@
 import { getSessionProfile } from "@/lib/auth";
 import { addSponsor, deleteSponsor, toggleSponsor } from "@/lib/actions/sponsors";
 import { Badge, Button, Card, ErrorNote, Input, Label } from "@/components/ui";
-import { UploadForm } from "@/components/upload-form";
+import { SponsorUploadForm } from "@/components/sponsor-upload-form";
 import { UPLOAD_LIMITS } from "@/lib/uploads";
 
 export default async function PatrocinadoresPage({
@@ -15,7 +15,7 @@ export default async function PatrocinadoresPage({
 
   const { data: sponsors } = await session.supabase
     .from("sponsors")
-    .select("id, name, logo_url, link_url, active")
+    .select("id, name, logo_url, link_url, active, bg_color")
     .order("created_at", { ascending: true });
 
   return (
@@ -29,7 +29,7 @@ export default async function PatrocinadoresPage({
       <ErrorNote message={error} />
 
       <Card className="mb-6">
-        <UploadForm
+        <SponsorUploadForm
           action={addSponsor}
           bucket={UPLOAD_LIMITS.sponsor.bucket}
           pathPrefix="logos"
@@ -51,14 +51,17 @@ export default async function PatrocinadoresPage({
               <Input type="text" inputMode="url" name="link_url" placeholder="site.com.br ou instagram.com/empresa" />
             </div>
           </div>
-        </UploadForm>
+        </SponsorUploadForm>
       </Card>
 
       <div className="space-y-2">
         {(sponsors ?? []).map((s) => (
           <Card key={s.id} className="py-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-16 h-12 rounded-lg bg-white flex items-center justify-center p-1.5 flex-shrink-0">
+              <div
+                className="w-28 h-16 rounded-lg flex items-center justify-center px-2 py-1.5 flex-shrink-0 ring-1 ring-black/10"
+                style={{ backgroundColor: s.bg_color }}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={s.logo_url} alt={s.name} className="max-w-full max-h-full object-contain" />
               </div>
