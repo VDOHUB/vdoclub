@@ -203,6 +203,22 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["ratings"]["Insert"]>;
         Relationships: [];
       };
+      legal_documents: {
+        Row: {
+          slug: string;
+          content: string;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          slug: string;
+          content: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["legal_documents"]["Insert"]>;
+        Relationships: [];
+      };
       sponsors: {
         Row: {
           id: string;

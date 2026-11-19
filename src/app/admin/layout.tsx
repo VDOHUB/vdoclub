@@ -29,6 +29,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <Link href="/admin/patrocinadores" className="hover:text-cream transition-colors">
                 Patrocinadores
               </Link>
+              <Link href="/admin/documentos" className="hover:text-cream transition-colors">
+                Documentos
+              </Link>
               <Link href="/app/orcamentos" className="hover:text-cream transition-colors">
                 Ver como membro
               </Link>
@@ -50,6 +53,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </Link>
           <Link href="/admin/patrocinadores" className="whitespace-nowrap hover:text-cream transition-colors">
             Patrocinadores
+          </Link>
+          <Link href="/admin/documentos" className="whitespace-nowrap hover:text-cream transition-colors">
+            Documentos
           </Link>
           <Link href="/app/orcamentos" className="whitespace-nowrap hover:text-cream transition-colors">
             Ver como membro

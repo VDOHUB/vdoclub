@@ -17,7 +17,7 @@ export function LegalLayout({
         </Link>
         <h1 className="font-serif text-3xl text-white mt-4 mb-1">{title}</h1>
         <p className="text-xs text-muted mb-8">Última atualização: {updatedAt}</p>
-        <div className="space-y-6 text-sm text-cream/85 leading-relaxed [&_h2]:font-serif [&_h2]:text-lg [&_h2]:text-white [&_h2]:mb-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1">
+        <div className="space-y-4 text-sm text-cream/85 leading-relaxed">
           {children}
         </div>
       </div>
